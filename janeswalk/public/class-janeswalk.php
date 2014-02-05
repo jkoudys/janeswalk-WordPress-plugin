@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name.
+ * Jane's Walk
  *
- * @package   Plugin_Name
- * @author    Your Name <email@example.com>
+ * @package   janeswalk
+ * @author    Joshua Koudys <josh@qaribou.com>
  * @license   GPL-2.0+
- * @link      http://example.com
- * @copyright 2014 Your Name or Company Name
+ * @link      http://janeswalk.org
+ * @copyright 2014 Joshua Koudys, Qaribou
  */
 
 /**
@@ -16,24 +16,21 @@
  * If you're interested in introducing administrative or dashboard
  * functionality, then refer to `class-plugin-name-admin.php`
  *
- * @TODO: Rename this class to a proper name for your plugin.
- *
- * @package Plugin_Name
- * @author  Your Name <email@example.com>
+ * @package janeswalk 
+ * @author    Joshua Koudys <josh@qaribou.com>
  */
-class Plugin_Name {
+class JanesWalk {
 
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   1.0.0
+	 * @since   0.0.1
 	 *
 	 * @var     string
 	 */
-	const VERSION = '1.0.0';
+	const VERSION = '0.0.2';
 
 	/**
-	 * @TODO - Rename "plugin-name" to the name your your plugin
 	 *
 	 * Unique identifier for your plugin.
 	 *
@@ -46,7 +43,7 @@ class Plugin_Name {
 	 *
 	 * @var      string
 	 */
-	protected $plugin_slug = 'plugin-name';
+	protected $plugin_slug = 'janeswalk';
 
 	/**
 	 * Instance of this class.

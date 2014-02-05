@@ -1,28 +1,31 @@
 <?php
 /**
- * The WordPress Plugin Boilerplate.
+ * Embedded Jane's Walks
  *
- * A foundation off of which to build well-documented WordPress plugins that
- * also follow WordPress Coding Standards and PHP best practices.
+ * Fetches Jane's Walk data directly from Jane's Walk's site, so
+ * what you show on your blog is always up to date with what's on
+ * our servers. The best way to avoid dates + meeting places going
+ * out of sync between your blog and the walk, or host your own
+ * site listing walks with your own theme.
  *
- * @package   Plugin_Name
- * @author    Your Name <email@example.com>
+ * @package   janeswalk
+ * @author    Joshua Koudys <josh@qaribou.com>
  * @license   GPL-2.0+
- * @link      http://example.com
- * @copyright 2014 Your Name or Company Name
+ * @link      http://janeswalk.org
+ * @copyright 2014 Joshua Koudys, Qaribou Software 
  *
  * @wordpress-plugin
- * Plugin Name:       @TODO
- * Plugin URI:        @TODO
- * Description:       @TODO
+ * Plugin Name:       janeswalk 
+ * Plugin URI:        http://janeswalk.org
+ * Description:       Fetch remote Jane's Walks 
  * Version:           1.0.0
- * Author:            @TODO
- * Author URI:        @TODO
+ * Author:            Joshua Koudys
+ * Author URI:        http://qaribou.com
  * Text Domain:       plugin-name-locale
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Domain Path:       /languages
- * GitHub Plugin URI: https://github.com/<owner>/<repo>
+ * GitHub Plugin URI: https://github.com/jkoudys/janeswalk-WordPress-plugin
  */
 
 // If this file is called directly, abort.
@@ -34,33 +37,17 @@ if ( ! defined( 'WPINC' ) ) {
  * Public-Facing Functionality
  *----------------------------------------------------------------------------*/
 
-/*
- * @TODO:
- *
- * - replace `class-plugin-name.php` with the name of the plugin's class file
- *
- */
-require_once( plugin_dir_path( __FILE__ ) . 'public/class-plugin-name.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'public/class-janeswalk.php' );
 
 /*
  * Register hooks that are fired when the plugin is activated or deactivated.
  * When the plugin is deleted, the uninstall.php file is loaded.
  *
- * @TODO:
- *
- * - replace Plugin_Name with the name of the class defined in
- *   `class-plugin-name.php`
  */
-register_activation_hook( __FILE__, array( 'Plugin_Name', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'Plugin_Name', 'deactivate' ) );
+register_activation_hook( __FILE__, array( 'JanesWalk', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'JanesWalk', 'deactivate' ) );
 
-/*
- * @TODO:
- *
- * - replace Plugin_Name with the name of the class defined in
- *   `class-plugin-name.php`
- */
-add_action( 'plugins_loaded', array( 'Plugin_Name', 'get_instance' ) );
+add_action( 'plugins_loaded', array( 'JanesWalk', 'get_instance' ) );
 
 /*----------------------------------------------------------------------------*
  * Dashboard and Administrative Functionality
@@ -69,7 +56,6 @@ add_action( 'plugins_loaded', array( 'Plugin_Name', 'get_instance' ) );
 /*
  * @TODO:
  *
- * - replace `class-plugin-name-admin.php` with the name of the plugin's admin file
  * - replace Plugin_Name_Admin with the name of the class defined in
  *   `class-plugin-name-admin.php`
  *
@@ -84,7 +70,7 @@ add_action( 'plugins_loaded', array( 'Plugin_Name', 'get_instance' ) );
  */
 if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 
-	require_once( plugin_dir_path( __FILE__ ) . 'admin/class-plugin-name-admin.php' );
+	require_once( plugin_dir_path( __FILE__ ) . 'admin/class-janeswalk-admin.php' );
 	add_action( 'plugins_loaded', array( 'Plugin_Name_Admin', 'get_instance' ) );
 
 }

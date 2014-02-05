@@ -15,7 +15,7 @@
  * @copyright 2014 Joshua Koudys, Qaribou Software 
  *
  * @wordpress-plugin
- * Plugin Name:       janeswalk 
+ * Plugin Name:       Jane's Walk
  * Plugin URI:        http://janeswalk.org
  * Description:       Fetch remote Jane's Walks 
  * Version:           1.0.0
@@ -54,11 +54,6 @@ add_action( 'plugins_loaded', array( 'JanesWalk', 'get_instance' ) );
  *----------------------------------------------------------------------------*/
 
 /*
- * @TODO:
- *
- * - replace Plugin_Name_Admin with the name of the class defined in
- *   `class-plugin-name-admin.php`
- *
  * If you want to include Ajax within the dashboard, change the following
  * conditional to:
  *
@@ -71,6 +66,6 @@ add_action( 'plugins_loaded', array( 'JanesWalk', 'get_instance' ) );
 if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 
 	require_once( plugin_dir_path( __FILE__ ) . 'admin/class-janeswalk-admin.php' );
-	add_action( 'plugins_loaded', array( 'Plugin_Name_Admin', 'get_instance' ) );
+	add_action( 'plugins_loaded', array( 'JanesWalk_Admin', 'get_instance' ) );
 
 }

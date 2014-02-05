@@ -48,8 +48,6 @@ class JanesWalk_Admin {
 	private function __construct() {
 
 		/*
-		 * @TODO :
-		 *
 		 * - Uncomment following lines if the admin class should only be available for super admins
 		 */
 		/* if( ! is_super_admin() ) {
@@ -95,8 +93,6 @@ class JanesWalk_Admin {
 	public static function get_instance() {
 
 		/*
-		 * @TODO :
-		 *
 		 * - Uncomment following lines if the admin class should only be available for super admins
 		 */
 		/* if( ! is_super_admin() ) {
@@ -165,15 +161,12 @@ class JanesWalk_Admin {
 		 *
 		 *        Administration Menus: http://codex.wordpress.org/Administration_Menus
 		 *
-		 * @TODO:
-		 *
-		 * - Change 'manage_options' to the capability you see fit
 		 *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
 		 */
 		$this->plugin_screen_hook_suffix = add_options_page(
 			__( 'Jane\'s Walk', $this->plugin_slug ),
 			__( 'Change Settings', $this->plugin_slug ),
-			'manage_options',
+			'edit_plugins',
 			$this->plugin_slug,
 			array( $this, 'display_plugin_admin_page' )
 		);

@@ -64,16 +64,6 @@ class JanesWalk {
   protected $cache_timeout = 60;
 
   /**
-   * Cached instance of fetched JSON
-   *
-   * @since    1.0.0
-   *
-   * @var      array
-   */
-  private $json_cache = array();
-
-
-  /**
    * Initialize the plugin by setting localization and loading public scripts
    * and styles.
    *
@@ -363,13 +353,13 @@ class JanesWalk {
   }
 
   private function fetch_json($url) {
-    if(!array_key_exists($url, $this->json_cache) || ($this->json_cache[$url]['timestamp'] - time() > $this->cache_timeout)) {
+    if(false === ($json = wp_cache_get('janeswalk_' . $url))) {
       $response = file_get_contents($url . "?format=json");
-      $this->json_cache[$url]['json'] = json_decode($response, true);
-      $this->json_cache[$url]['timestamp'] = time();
-      echo "Fetch!";
+      $json = json_decode($response, true);
+      wp_cache_set('janeswalk_' . $url, $json);
+      echo "<div style='display:none' class='janeswalk-widget-cachemiss' data-janeswalk-cache='$url'></div>";
     }
-    return $this->json_cache[$url]['json'];
+    return $json;
   }
 
   private function render_city( $json, $show = "title shortdescription longdescription cityorganizer walktitle walkleaders walkdate walkdescription" ) {
@@ -437,7 +427,7 @@ class JanesWalk {
       case "date":
         $scheduled = $json['time'];
         $slots = (Array)$scheduled['slots']; 
-        if($scheduled['open']) {
+        if(array_key_exists('open',$scheduled) && $scheduled['open']) {
           $return .= '<h4 class="available-time"><i class="icon-calendar"></i> Open schedule</h4>';
         } else if(isset($slots[0]['date'])) {
           $return .= "<h4 class='available-time'><i class='icon-calendar'></i> Next available day: <span class='highlight'>{$slots[0]['date']}</span></h4>";

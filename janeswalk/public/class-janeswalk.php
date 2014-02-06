@@ -323,16 +323,12 @@ class JanesWalk {
     if($json = $this->fetch_json($atts['link'])) { 
       // If you specifically set the 'show', only show those details. Otherwise, we show a most-common case
       $show = array_key_exists('show', $atts) ? $atts['show'] : null;
-      switch( $atts['type'] ) {
+      switch( @$atts['type'] ) {
       case "map":
         $this->render_map( $atts['link'] . "?format=kml" );
         break;
       case "city":
-        if(isset($show)) {
-          $this->render_city( $json, $show );
-        } else {
-          $this->render_city( $json );
-        }
+        $this->render_city( $json, $show );
         break;
       default:
         $this->render_walk( $json, $show );
@@ -353,8 +349,9 @@ class JanesWalk {
     return $json;
   }
 
-  private function render_city( $json, $show = "title shortdescription longdescription cityorganizer walktitle walkleaders walkdate walkdescription" ) {
-    include 'views/city.php';
+  private function render_city( $json, $show) {
+    $show = $show ?: 'title shortdescription longdescription cityorganizer walktitle walkleaders walkdate walkdescription';
+    include 'views/nyc/city.php';
     return true;
   }
 

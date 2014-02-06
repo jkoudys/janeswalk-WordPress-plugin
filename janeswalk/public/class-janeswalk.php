@@ -319,36 +319,27 @@ class JanesWalk {
    * @since    1.0.0
    */
   public function shortcode_janeswalk($atts) {
-    // create the plugin container
-    $template = "<div class='janeswalk-widget' data-janeswalk-type='{$atts['type']}'>";
-
     // Get the JSON for this page
     if($json = $this->fetch_json($atts['link'])) { 
       // If you specifically set the 'show', only show those details. Otherwise, we show a most-common case
       $show = array_key_exists('show', $atts) ? $atts['show'] : null;
       switch( $atts['type'] ) {
       case "map":
-        $template .= $this->render_map( $atts['link'] . "?format=kml" );
+        $this->render_map( $atts['link'] . "?format=kml" );
         break;
       case "city":
         if(isset($show)) {
-          $template .= $this->render_city( $json, $show );
+          $this->render_city( $json, $show );
         } else {
-          $template .= $this->render_city( $json );
+          $this->render_city( $json );
         }
         break;
       default:
-        if(isset($show)) {
-          $template .= $this->render_walk( $json, $show );
-        } else {
-          $template .= $this->render_walk( $json );
-        }
+        $this->render_walk( $json, $show );
         break;
       }
-      $template .= "</div>";
-      return $template;
     } else {
-      return $template . "JanesWalk: Cannot load URL {$atts['link']}?format=json";
+      return "JanesWalk: Cannot load URL {$atts['link']}?format=json";
     }
   }
 
@@ -363,131 +354,42 @@ class JanesWalk {
   }
 
   private function render_city( $json, $show = "title shortdescription longdescription cityorganizer walktitle walkleaders walkdate walkdescription" ) {
-    $return = "";
-    foreach(explode(" ", $show) as $section) {
-      switch($section) {
-      case 'title':
-        $return .=  ($json['url'] ? "<a href='{$json['url']}'>" : null) . "<h2 class='janeswalk-widget-title'>{$json['title']}</h2>" . ($json['url'] ? "</a>" : null);
-        break;
-      case 'shortdescription':
-        $return .= "<div class='janeswalk-widget-shortdescription'>{$json['short_description']}</div>";
-        break;
-      case 'longdescription':
-        $return .= "<div class='janeswalk-widget-longdescription'>{$json['long_description']}</div>";
-        break;
-      case 'cityorganizer':
-        $return .= "<p class='janeswalk-widget-cityorganizer'>{$json['city_organizer']['first_name']} {$json['city_organizer']['last_name']} </p>";
-        break;
-      default:
-        break;
-      }
-    }
-
-    if(!empty($json['walks'])) {
-      foreach($json['walks'] as $walk) {
-        foreach(explode(" ", $show) as $section) {
-          switch($section) {
-          case "walktitle":
-            $return .=  "<h3>" . ($walk['url'] ? "<a href='{$walk['url']}'>":'') . $walk['title'] . ($walk['url'] ?'</a>':'') . "</h3>";
-            break;
-          case "date":
-            $scheduled = $walk->time;
-            $slots = (Array)$scheduled->slots; 
-            if($scheduled->open) {
-              $return .= '<h4 class="available-time"><i class="icon-calendar"></i> Open schedule</h4>';
-            } else if(isset($slots[0]['date'])) {
-              $return .= "<h4 class='available-time'><i class='icon-calendar'></i> Next available day: <span class='highlight'>{$slots[0]["date"]}</span></h4>";
-            }
-            break;
-          case "leaders":
-            $return .= "<h5>$walk->team</h5>";
-            break;
-          case "description":
-            // Load up the return with the data from the walk
-            $return .= "<p style='font-size:1.2em' class='janeswalk-widget-shortdescription'>{$walk['short_description']}</p>"
-              . "<p style='font-size:1.2em' class='janeswalk-widget-longdescription'>{$walk['long_description']}</p>";
-            break; 
-          default:
-            break;
-          }
-        }
-      }
-    }
-    return $return;
+    include 'views/city.php';
+    return true;
   }
 
-  private function render_walk( $json, $show = "title leaders date description accessibility themes" ) {
+  private function render_walk( $json, $show ) {
+    $show = $show ?: 'title leaders date description accessibility themes';
     $th = new JanesWalk_ThemeHelper(); // TODO: remove and do this processing server-side
-    $return = "";
-    foreach(explode(" ", $show) as $section) {
-      switch($section) {
-      case "title":
-        $return .=  "<h2 class='janeswalk-widget-title'>" . $json['title'] . "</h2>";
-        break;
-      case "date":
-        $scheduled = $json['time'];
-        $slots = (Array)$scheduled['slots']; 
-        if(array_key_exists('open',$scheduled) && $scheduled['open']) {
-          $return .= '<h4 class="available-time"><i class="icon-calendar"></i> Open schedule</h4>';
-        } else if(isset($slots[0]['date'])) {
-          $return .= "<h4 class='available-time'><i class='icon-calendar'></i> Next available day: <span class='highlight'>{$slots[0]['date']}</span></h4>";
-        }
-        break;
-      case "leaders":
-        $teamCount = 0;
-        foreach($json['team'] as $mem) {
-          if(!empty($mem->{'name-first'})) { $teamCount++; }
-        }
-        if($teamCount > 0) {
-          if($teamCount == 1) {
-            $return .= "<h5>Walk Leader: ";
-          }
-          else {
-            $return .= "<h5>Walk Leaders: ";
-          }
-          foreach($json['team'] as $key=>$mem) {
-            $return .= empty($mem->{'name-first'}) ? null : (($key > 0 ? ', ' : null) . "{$mem->{'name-first'}} {$mem->{'name-last'}}");
-          }
-          $return .= "</h5>";
-        }
-        break;
-      case "themes":
-        $return .= "<h4>Themes</h4>";
-        $return .= "<ul class='janeswalk-widget-themes'>";
-        foreach($json['checkboxes'] as $key=>$theme) {
-          if(substr($key, 0, 6) == "theme-") {
-            $return .= "<li data-key='$key'>{$th->getName(substr($key,6))}</li>";
-          }
-        }
-        $return .= "</ul>";
-        break; 
-      case "accessibility":
-        $return .= "<h4>Accessibility</h4>";
-        $return .= "<ul class='janeswalk-widget-accessibility'>";
-        foreach($json['checkboxes'] as $key=>$theme) {
-          if(substr($key, 0, 11) == "accessible-") {
-            $return .= "<li>{$th->getName(substr($key,11))}</li>";
-          }
-        }
-        $return .= "</ul>";
+    $scheduled = $json['time'];
+    $slots = (Array)$scheduled['slots']; 
+    $eid = array_key_exists('eventbrite', $json) ? $json['eventbrite'] : null;
 
-        break; 
-      case "description":
-        // Load up the return with the data from the json
-        $return .= "<p style='font-size:1.2em' class='janeswalk-widget-shortdescription'>{$json['shortdescription']}</p><p>{$json['longdescription']}</p>";
-        break; 
-      case "register":
-        $eid = $json['eventbrite'];
-        if(!empty($eid)) {
-          $return .= '<a data-eid="<?=$eid?>" href="<?php echo "http://eventbrite.ca/event/" . $eid ?>" id="register-btn" class="btn btn-primary btn-large">Register For This Walk</a>';
-        }
-        break; 
+    $team = array_map(function($mem) { 
+      if($mem['type'] === 'you') {
+        $mem['type'] = ($mem['role'] === 'walk-organizer') ? 'organizer' : 'leader';
+      }
+      switch($mem['type']) {
+      case 'leader':
+        $mem['title'] = 'Walk Leader';
+        break;
+      case 'organizer':
+        $mem['title'] = 'Walk Organizer';
+        break;
+      case 'community':
+        $mem['title'] = 'Community Voice';
+        break;
+      case 'volunteer':
+        $mem['title'] = 'Volunteer';
+        break;
       default:
-        $return .= "<p>Warning: show '$section' not recognized.</p>";
         break;
       }
-    }
-    return $return;
+      return $mem;
+    }, $json['team']);
+    $walk_leaders = array_filter($team, function($mem) { return strpos($mem['type'], 'leader') !== false; });
+    include 'views/walk.php';
+    return true;
   }
 
   private function render_map ( $url ) {

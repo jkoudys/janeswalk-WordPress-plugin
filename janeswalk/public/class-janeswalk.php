@@ -341,8 +341,8 @@ class JanesWalk {
 
   private function fetch_json($url) {
     if(false === ($json = wp_cache_get('janeswalk_' . $url))) {
-      $response = file_get_contents($url . "?format=json");
-      $json = json_decode($response, true);
+      $response = wp_remote_get($url . "?format=json");
+      $json = json_decode($response['body'], true);
       wp_cache_set('janeswalk_' . $url, $json);
       echo "<div style='display:none' class='janeswalk-widget-cachemiss' data-janeswalk-cache='$url'></div>";
     }

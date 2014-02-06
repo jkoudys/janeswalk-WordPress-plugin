@@ -325,38 +325,40 @@ class JanesWalk {
       $show = array_key_exists('show', $atts) ? $atts['show'] : null;
       switch( @$atts['type'] ) {
       case "map":
-        $this->render_map( $atts['link'] . "?format=kml" );
+        return $this->render_map( $atts['link'] . "?format=kml" );
         break;
       case "city":
-        $this->render_city( $json, $show );
+        return $this->render_city( $json, $show );
         break;
       default:
-        $this->render_walk( $json, $show );
+        return $this->render_walk( $json, $show );
         break;
       }
     } else {
-      return "JanesWalk: Cannot load URL {$atts['link']}?format=json";
+      return "JanesWalk cannot load URL {$atts['link']}?format=json at this time.";
     }
   }
 
   private function fetch_json($url) {
     if(false === ($json = wp_cache_get('janeswalk_' . $url))) {
-      $response = wp_remote_get($url . "?format=json");
-      $json = json_decode($response['body'], true);
-      wp_cache_set('janeswalk_' . $url, $json);
-      echo "<div style='display:none' class='janeswalk-widget-cachemiss' data-janeswalk-cache='$url'></div>";
+      if(get_class((object)$response = wp_remote_get($url . "?format=json")) !== 'WP_Error') {
+        $json = json_decode($response['body'], true);
+        wp_cache_set('janeswalk_' . $url, $json);
+        echo "<div style='display:none' class='janeswalk-widget-cachemiss' data-janeswalk-cache='$url'></div>";
+      } else { $json = false; }
     }
     return $json;
   }
 
   private function render_city( $json, $show) {
     $show = explode(' ', $show ?: 'title shortdescription longdescription cityorganizer walktitle walkleaders walkdate walkdescription');
+    ob_start();
     if(in_array('mas', $show)) {
       include 'views/nyc/city.php';
     } else {
       include 'views/city.php';
     }
-    return true;
+    return ob_get_clean();
   }
 
   private function render_walk( $json, $show ) {
@@ -389,8 +391,9 @@ class JanesWalk {
       return $mem;
     }, $json['team']);
     $walk_leaders = array_filter($team, function($mem) { return strpos($mem['type'], 'leader') !== false; });
+    ob_start();
     include 'views/walk.php';
-    return true;
+    return ob_get_clean();
   }
 
   private function render_map ( $url ) {

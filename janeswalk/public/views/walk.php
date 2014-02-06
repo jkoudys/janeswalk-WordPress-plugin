@@ -13,7 +13,7 @@
 ?>
 
 <?php
-foreach(explode(" ", $show) as $section) {
+foreach($show as $section) {
   switch($section) {
   case "title": ?>
   <h2 class='janeswalk-widget-title'><?=$json['title']?></h2>

@@ -22,11 +22,16 @@
 <?php
 if(!empty($json['walks'])) {
   foreach($json['walks'] as $walk) {
+    if($walk['schedule']) {
+      $date = date('M j, Y', strtotime($walk['schedule']));
+    } else {
+      $date = "Open";
+    }
 ?>
 <table style="padding: 7px;" width="950" border="0" cellspacing="0" cellpadding="0">
   <tbody>
     <tr>
-      <td valign="top" width="6%"><?=$walk['schedule']?></td>
+      <td valign="top" width="6%"><?=$date?></td>
       <td valign="top" width="8%"><?=$walk['time']?></td>
       <td style="padding-left: 10px; padding-right: 10px;" valign="top" width="40%"><a href="<?=$walk['url']?>" ><?=$walk['title']?></a></td>
       <td valign="top" width="46%"><?=$walk['short_description']?></td>

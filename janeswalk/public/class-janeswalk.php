@@ -350,13 +350,17 @@ class JanesWalk {
   }
 
   private function render_city( $json, $show) {
-    $show = $show ?: 'title shortdescription longdescription cityorganizer walktitle walkleaders walkdate walkdescription';
-    include 'views/nyc/city.php';
+    $show = explode(' ', $show ?: 'title shortdescription longdescription cityorganizer walktitle walkleaders walkdate walkdescription');
+    if(in_array('mas', $show)) {
+      include 'views/nyc/city.php';
+    } else {
+      include 'views/city.php';
+    }
     return true;
   }
 
   private function render_walk( $json, $show ) {
-    $show = $show ?: 'title leaders date description accessibility themes';
+    $show = explode(' ', $show ?: 'title leaders date description accessibility themes');
     $th = new JanesWalk_ThemeHelper(); // TODO: remove and do this processing server-side
     $scheduled = $json['time'];
     $slots = (Array)$scheduled['slots']; 

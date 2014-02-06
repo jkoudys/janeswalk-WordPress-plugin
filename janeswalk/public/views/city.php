@@ -14,7 +14,7 @@
 ?>
 <?php
     $return = "";
-    foreach(explode(" ", $show) as $section) {
+    foreach($show as $section) {
       switch($section) {
       case 'title':
 ?>
@@ -44,7 +44,7 @@
     }
     if(!empty($json['walks'])) {
       foreach($json['walks'] as $walk) {
-        foreach(explode(" ", $show) as $section) {
+        foreach($show as $section) {
           switch($section) {
           case "walktitle":
 ?>

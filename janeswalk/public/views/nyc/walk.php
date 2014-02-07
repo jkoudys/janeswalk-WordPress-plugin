@@ -1,8 +1,8 @@
 <?php
 /**
- * View of a Walk
+ * NYC Walks
  *
- * A simple list-view of a walk, suitable for most blogs
+ * A walk rendered in the same HTML format as the MAS block
  *
  * @package   janeswalk
  * @author    Joshua Koudys <josh@qaribou.com>
@@ -12,74 +12,18 @@
  */
 ?>
 
-<?php
-foreach(explode(" ", $show) as $section) {
-  switch($section) {
-  case "title": ?>
-  <h2 class='janeswalk-widget-title'><?=$json['title']?></h2>
-<?php
-    break;
-  case "date":
-    if(array_key_exists('open',$scheduled) && $scheduled['open']) { ?>
-  <h4 class="available-time"><i class="icon-calendar"></i> Open schedule</h4>
-<?php
-    } else if(isset($slots[0]['date'])) {
-?>
-  <h4 class='available-time'><i class='icon-calendar'></i> Next available day: <span class='highlight'><?=$slots[0]['date']?></span></h4>
-<?php
-    }
-    break;
-  case "leaders": ?>
-    <h3><?='Walk Leader' . (sizeof($walk_leaders) === 1 ? ': ' : 's: ') .
-      implode(', ', array_map(function($mem){ return "{$mem['name-first']} {$mem['name-last']}"; }, $walk_leaders)); ?></h3>
-<?php
-    break;
-  case "themes": ?>
-  <h4>Themes</h4>
-    <ul class='janeswalk-widget-themes'>
-<?php
-    foreach($json['checkboxes'] as $key=>$theme) {
-      if(substr($key, 0, 6) == "theme-") {
-?>
-      <li data-key='$key'><?=$th->getName(substr($key,6))?></li>
-<?php
-      }
-    } ?>
-    </ul>
-<?php
-    break; 
-  case "accessibility": ?>
-    <h4>Accessibility</h4>
-    <ul class='janeswalk-widget-accessibility'>
-<?php
-    foreach($json['checkboxes'] as $key=>$theme) {
-      if(substr($key, 0, 11) == "accessible-") { 
-?>
-    <li><?=$th->getName(substr($key,11))?></li>
-<?php
-      }
-    }
-?>
-    </ul>
-<?php
-    break; 
-  case "description":
-?>
-    <p style='font-size:1.2em' class='janeswalk-widget-shortdescription'><?=$json['shortdescription']?></p><p><?=$json['longdescription']?></p>
-<?php
-    break; 
-  case "register":
-    if(!empty($eid)) {
-?>
-    <a data-eid="<?=$eid?>" href="<?="http://eventbrite.ca/event/" . $eid ?>" id="register-btn" class="btn btn-primary btn-large">Register For This Walk</a>
-<?php
-    }
-    break; 
-  default:
-?>
-    <p>Warning: show '<?=$section?>' not recognized.</p>
-<?php
-    break;
-  }
-}
-?>
+<div>
+  <h3 style="font-size: 2.3em; letter-spacing: -1px; margin: 5px 0 15px 0; line-height: 1.2em;"><?=$json['title']?></h3>
+  <div style="font-size: 1.2em;">
+    <p style="margin-right: 20px;">
+      <?php // TODO: don't hard-code the janeswalk.org url, so that JW DBs can be setup elsewhere ?>
+      <img src="http://janeswalk.org/<?=$json['thumbnail_url']?>" class="attachment-thumbnail wp-post-image">
+    </p>
+    <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Date</span>:</strong> <?=$date?></p>
+    <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Time</span>:</strong> <?=$time?></p>
+    <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Walk Host</span>:</strong> <?=implode(', ', $walk_leaders)?></p>
+    <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Accessibility</span>:</strong> <?=implode(', ', $accessible)?></p>
+    <p style="clear: left; margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Description</span>:</strong> <?=$json['longdescription']?></p>
+    <p></p>
+  </div>
+</div>

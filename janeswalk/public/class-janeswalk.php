@@ -366,9 +366,8 @@ class JanesWalk {
     $show = explode(' ', $show ?: 'title leaders date description accessibility themes');
     $th = new JanesWalk_ThemeHelper(); // TODO: remove and do this processing server-side
 
-    $scheduled = $args['time'];
-    $args = array();
-    $slots = (Array)$scheduled['slots']; 
+    extract($args);
+    $slots = (Array)$time['slots']; 
 
     $team = array_map(function($mem) { 
       if($mem['type'] === 'you') {

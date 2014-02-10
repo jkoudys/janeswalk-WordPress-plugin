@@ -16,11 +16,11 @@
 foreach($show as $section) {
   switch($section) {
   case "title": ?>
-  <h2 class='janeswalk-widget-title'><?=$json['title']?></h2>
+  <h2 class='janeswalk-widget-title'><?=$title?></h2>
 <?php
     break;
   case "date":
-    if(array_key_exists('open',$scheduled) && $scheduled['open']) { ?>
+    if(array_key_exists('open',$time) && $time['open']) { ?>
   <h4 class="available-time"><i class="icon-calendar"></i> Open schedule</h4>
 <?php
     } else if(isset($slots[0]['date'])) {
@@ -38,7 +38,7 @@ foreach($show as $section) {
   <h4>Themes</h4>
     <ul class='janeswalk-widget-themes'>
 <?php
-    foreach($json['checkboxes'] as $key=>$theme) {
+    foreach($checkboxes as $key=>$theme) {
       if(substr($key, 0, 6) == "theme-") {
 ?>
       <li data-key='$key'><?=$th->getName(substr($key,6))?></li>
@@ -52,7 +52,7 @@ foreach($show as $section) {
     <h4>Accessibility</h4>
     <ul class='janeswalk-widget-accessibility'>
 <?php
-    foreach($json['checkboxes'] as $key=>$theme) {
+    foreach($checkboxes as $key=>$theme) {
       if(substr($key, 0, 11) == "accessible-") { 
 ?>
     <li><?=$th->getName(substr($key,11))?></li>
@@ -65,13 +65,13 @@ foreach($show as $section) {
     break; 
   case "description":
 ?>
-    <p style='font-size:1.2em' class='janeswalk-widget-shortdescription'><?=$json['shortdescription']?></p><p><?=$json['longdescription']?></p>
+    <p style='font-size:1.2em' class='janeswalk-widget-shortdescription'><?=$shortdescription?></p><p><?=$longdescription?></p>
 <?php
     break; 
   case "register":
-    if(!empty($eid)) {
+    if(!empty($eventbrite)) {
 ?>
-    <a data-eid="<?=$eid?>" href="<?="http://eventbrite.ca/event/" . $eid ?>" id="register-btn" class="btn btn-primary btn-large">Register For This Walk</a>
+    <a data-eid="<?=$eventbrite?>" href="<?="http://eventbrite.ca/event/" . $eventbrite ?>" id="register-btn" class="btn btn-primary btn-large">Register For This Walk</a>
 <?php
     }
     break; 

@@ -59,7 +59,7 @@ class JanesWalk_Admin {
 		 *
 		 */
 		$plugin = JanesWalk::get_instance();
-		$this->plugin_slug = $plugin->get_plugin_slug();
+    $this->plugin_slug = $plugin->get_plugin_slug();
 
 		// Load admin style sheet and JavaScript.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
@@ -78,8 +78,8 @@ class JanesWalk_Admin {
 		 * Read more about actions and filters:
 		 * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
 		 */
-		add_action( '@TODO', array( $this, 'action_method_name' ) );
-		add_filter( '@TODO', array( $this, 'filter_method_name' ) );
+/*		add_action( '@TODO', array( $this, 'action_method_name' ) );
+add_filter( '@TODO', array( $this, 'filter_method_name' ) ); */
 
 	}
 
@@ -122,7 +122,7 @@ class JanesWalk_Admin {
 
 		$screen = get_current_screen();
 		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-			wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), JanesWalk::VERSION );
+			wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url("{$this->plugin_slug}/admin/assets/css/admin.css"), array(), JanesWalk::VERSION );
 		}
 
 	}
@@ -142,7 +142,7 @@ class JanesWalk_Admin {
 
 		$screen = get_current_screen();
 		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), JanesWalk::VERSION );
+			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js'), array( 'jquery' ), JanesWalk::VERSION );
 		}
 
 	}
@@ -162,10 +162,10 @@ class JanesWalk_Admin {
 		 *        Administration Menus: http://codex.wordpress.org/Administration_Menus
 		 *
 		 *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
-		 */
+     */
 		$this->plugin_screen_hook_suffix = add_options_page(
+			__( 'Jane\'s Walk Settings', $this->plugin_slug ),
 			__( 'Jane\'s Walk', $this->plugin_slug ),
-			__( 'Change Settings', $this->plugin_slug ),
 			'edit_plugins',
 			$this->plugin_slug,
 			array( $this, 'display_plugin_admin_page' )
@@ -178,7 +178,8 @@ class JanesWalk_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function display_plugin_admin_page() {
+  public function display_plugin_admin_page() {
+    $logo = plugins_url("{$this->plugin_slug}/admin/assets/images/logo.png");
 		include_once( 'views/admin.php' );
 	}
 

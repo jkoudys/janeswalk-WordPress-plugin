@@ -18,32 +18,32 @@
       switch($section) {
       case 'title':
 ?>
-  <?php if($json['url']) { ?><a href='<?=$json['url']?>'><?php } ?>
-    <h2 class='janeswalk-widget-title'><?=$json['title']?></h2>
-  <?php if($json['url']) { ?></a> <?php } ?>
+  <?php if($url) { ?><a href='<?=$url?>'><?php } ?>
+    <h2 class='janeswalk-widget-title'><?=$title?></h2>
+  <?php if($url) { ?></a> <?php } ?>
 <?php
         break;
       case 'shortdescription':
 ?>
-  <div class='janeswalk-widget-shortdescription'><?=$json['short_description']?></div>
+  <div class='janeswalk-widget-shortdescription'><?=$short_description?></div>
 <?php
         break;
       case 'longdescription':
 ?>
-  <div class='janeswalk-widget-longdescription'><?=$json['long_description']?></div>
+  <div class='janeswalk-widget-longdescription'><?=$long_description?></div>
 <?php
         break;
       case 'cityorganizer':
 ?>
-  <p class='janeswalk-widget-cityorganizer'><?=$json['city_organizer']['first_name']?> <?=$json['city_organizer']['last_name']?></p>
+  <p class='janeswalk-widget-cityorganizer'><?=$city_organizer['first_name']?> <?=$city_organizer['last_name']?></p>
 <?php
         break;
       default:
         break;
       }
     }
-    if(!empty($json['walks'])) {
-      foreach($json['walks'] as $walk) {
+    if(!empty($walks)) {
+      foreach($walks as $walk) {
         foreach($show as $section) {
           switch($section) {
           case "walktitle":

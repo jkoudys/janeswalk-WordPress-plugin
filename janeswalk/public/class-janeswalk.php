@@ -350,8 +350,9 @@ class JanesWalk {
     return $json;
   }
 
-  private function render_city( $json, $show) {
+  private function render_city( $args, $show) {
     $show = explode(' ', $show ?: 'title shortdescription longdescription cityorganizer walktitle walkleaders walkdate walkdescription');
+    extract($args);
     ob_start();
     if(in_array('mas', $show)) {
       include 'views/nyc/city.php';
@@ -361,12 +362,13 @@ class JanesWalk {
     return ob_get_clean();
   }
 
-  private function render_walk( $json, $show ) {
+  private function render_walk( $args, $show ) {
     $show = explode(' ', $show ?: 'title leaders date description accessibility themes');
     $th = new JanesWalk_ThemeHelper(); // TODO: remove and do this processing server-side
-    $scheduled = $json['time'];
+
+    $scheduled = $args['time'];
+    $args = array();
     $slots = (Array)$scheduled['slots']; 
-    $eid = array_key_exists('eventbrite', $json) ? $json['eventbrite'] : null;
 
     $team = array_map(function($mem) { 
       if($mem['type'] === 'you') {
@@ -389,12 +391,12 @@ class JanesWalk {
         break;
       }
       return $mem;
-    }, $json['team']);
+    }, $args['team']);
     $walk_leaders = array_map(function($mem) {
       return "{$mem['name-first']} {$mem['name-last']}";
     },
       array_filter($team, function($mem) { return strpos($mem['type'], 'leader') !== false; }));
-    $accessible = array_filter(array_keys($json['checkboxes']), function($check) { return strpos($check, 'accessible-') === 0; } );
+    $accessible = array_filter(array_keys($args['checkboxes']), function($check) { return strpos($check, 'accessible-') === 0; } );
     array_walk($accessible, function(&$val,$key) use ($th) { 
       $val = $th->getName(substr($val,11)); 
     });

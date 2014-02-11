@@ -48,13 +48,6 @@ class JanesWalk_Admin {
 	private function __construct() {
 
 		/*
-		 * - Uncomment following lines if the admin class should only be available for super admins
-		 */
-		/* if( ! is_super_admin() ) {
-			return;
-		} */
-
-		/*
 		 * Call $plugin_slug from public plugin class.
 		 *
 		 */
@@ -66,7 +59,10 @@ class JanesWalk_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
 		// Add the options page and menu item.
-		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+    add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+
+    // Load up any options and whitelist
+    add_action( 'admin_init', array( $this, 'add_plugin_options' ) );
 
 		// Add an action link pointing to the options page.
 		$plugin_basename = plugin_basename( plugin_dir_path( __DIR__ ) . $this->plugin_slug . '.php' );
@@ -78,9 +74,8 @@ class JanesWalk_Admin {
 		 * Read more about actions and filters:
 		 * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
 		 */
-/*		add_action( '@TODO', array( $this, 'action_method_name' ) );
-add_filter( '@TODO', array( $this, 'filter_method_name' ) ); */
-
+/*  add_action( '@TODO', array( $this, 'action_method_name' ) );
+    add_filter( '@TODO', array( $this, 'filter_method_name' ) ); */
 	}
 
 	/**
@@ -171,7 +166,16 @@ add_filter( '@TODO', array( $this, 'filter_method_name' ) ); */
 			array( $this, 'display_plugin_admin_page' )
 		);
 
-	}
+  }
+
+  /**
+	 * Register all the options this plugin will set
+	 *
+	 * @since    1.0.0
+	 */
+  public function add_plugin_options() {
+    register_setting($this->plugin_slug, 'janeswalk_links');
+  }
 
 	/**
 	 * Render the settings page for this plugin.
@@ -180,6 +184,10 @@ add_filter( '@TODO', array( $this, 'filter_method_name' ) ); */
 	 */
   public function display_plugin_admin_page() {
     $logo = plugins_url("{$this->plugin_slug}/admin/assets/images/logo.png");
+    $pages = get_pages();
+    $permalinks_enabled = !empty(get_option('permalink_structure'));
+    $janeswalk_links = get_option('janeswalk_links');
+     
 		include_once( 'views/admin.php' );
 	}
 

@@ -87,7 +87,7 @@ class JanesWalk {
     /*add_action( '@TODO', array( $this, 'action_method_name' ) );
     add_filter( '@TODO', array( $this, 'filter_method_name' ) ); */
 
-    add_shortcode ( 'janeswalk', array($this, 'shortcode_janeswalk') );
+    add_shortcode( 'janeswalk', array($this, 'shortcode_janeswalk') );
 
   }
 
@@ -192,6 +192,11 @@ class JanesWalk {
       self::single_deactivate();
     }
 
+    unregister_setting($this->plugin_slug, 'janeswalk_links', array('JanesWalk','sanitize_links'));
+  }
+
+  public static function sanitize_links($link) {
+    return $link; // TODO: verify this actually links to a real page
   }
 
   /**

@@ -1,4 +1,3 @@
 /* This stylesheet is used to style the admin option form of the plugin. */
-h2 {
-  line-height:32px;
-}
+.wrap h2 {
+  line-height: 40px; }

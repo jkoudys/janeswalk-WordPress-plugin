@@ -27,18 +27,10 @@
     <table class="form-table">
       <tr>
         <th>
-          <label><input name="selection" type="radio" value="external" /> External</label>
+          <label>Page</label>
         </th>
         <td>
-          Links go out to JanesWalk.org
-        </td>
-      </tr>
-      <tr>
-        <th>
-          <label><input name="selection" type="radio" value="page" /> Page</label>
-        </th>
-        <td>
-          <?php wp_dropdown_pages(array('name'=>'janeswalk_links', 'selected' => $janeswalk_links)) ?>
+          <?php wp_dropdown_pages(array('name'=>'janeswalk_links', 'show_option_none' => 'No page', 'selected' => $janeswalk_links)) ?>
         </td>
       </tr>
     </table>

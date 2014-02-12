@@ -73,6 +73,7 @@ class JanesWalk {
 
     // Load plugin text domain
     add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
+    add_action( 'init', array( $this, 'add_rewrite_tags' ) );
 
     // Activate plugin when new blog is added
     add_action( 'wpmu_new_blog', array( $this, 'activate_new_site' ) );
@@ -155,6 +156,16 @@ class JanesWalk {
     }
 
   }
+
+  /**
+	 * Tags go here, need init to load
+	 *
+	 * @since    1.0.0
+	 */
+  public function add_rewrite_tags() {
+    add_rewrite_tag('%janeswalk_link%','([^&/]+)');
+  }
+
 
   /**
    * Fired when the plugin is deactivated.
@@ -324,10 +335,12 @@ class JanesWalk {
    * @since    1.0.0
    */
   public function shortcode_janeswalk($atts) {
+    global $wp;
+    $link = $atts && array_key_exists('link',(array)$atts) ? $atts['link'] : $wp->query_vars['janeswalk_link'];
     // Get the JSON for this page
-    if($json = $this->fetch_json($atts['link'])) { 
+    if($json = $this->fetch_json($link)) { 
       // If you specifically set the 'show', only show those details. Otherwise, we show a most-common case
-      $show = array_key_exists('show', $atts) ? $atts['show'] : null;
+      $show = array_key_exists('show', (array)$atts) ? $atts['show'] : null;
       switch( @$atts['type'] ) {
       case "map":
         return $this->render_map( $atts['link'] . "?format=kml" );
@@ -340,7 +353,7 @@ class JanesWalk {
         break;
       }
     } else {
-      return "JanesWalk cannot load URL {$atts['link']}?format=json at this time.";
+      return "JanesWalk cannot load URL $link?format=json at this time.";
     }
   }
 
@@ -417,7 +430,7 @@ class JanesWalk {
   }
 
   private function render_map ( $url ) {
-    return '<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=' . urlencode($url) . '&amp;output=embed"></iframe>';
+    return '<iframe width="' . (get_option('janeswalk_map_width') ?: '425') . '" height="' . (get_option('janeswalk_map_height') ?: '300') . '" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=' . urlencode($url) . '&amp;output=embed"></iframe>';
   }
 }
 

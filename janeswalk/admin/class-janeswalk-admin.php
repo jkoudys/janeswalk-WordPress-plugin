@@ -66,7 +66,8 @@ class JanesWalk_Admin {
 
 		// Add an action link pointing to the options page.
 		$plugin_basename = plugin_basename( plugin_dir_path( __DIR__ ) . $this->plugin_slug . '.php' );
-		add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
+    add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
+    add_filter('query_vars', array($this, 'add_query_vars'));
 
 		/*
 		 * Define custom functionality.
@@ -174,7 +175,34 @@ class JanesWalk_Admin {
 	 * @since    1.0.0
 	 */
   public function add_plugin_options() {
-    register_setting($this->plugin_slug, 'janeswalk_links');
+    register_setting($this->plugin_slug, 'janeswalk_walkpage');
+    register_setting($this->plugin_slug, 'janeswalk_map_height');
+    register_setting($this->plugin_slug, 'janeswalk_map_width');
+
+    // Setup the rewrites
+    add_action('generate_rewrite_rules', array($this, 'generate_rewrite_rules') );
+    add_action('update_option_janeswalk_walkpage', array($this, 'janeswalk_walkpage_option_update'));
+  }
+
+  /**
+	 * Set the rewrite rules to pass in path as variable
+	 *
+	 * @since    1.0.0
+	 */
+  public function generate_rewrite_rules($wp_rewrite) {
+    if($janeswalk_walkpage = get_option('janeswalk_walkpage')) { 
+      // TODO Confirm if this approach should be used, as add_rewrite_rule() wasn't doing anything
+      $wp_rewrite->rules = (array_merge(array('^' . get_page_uri($janeswalk_walkpage) . '/(.*)?' => 'index.php?page_id=' . $janeswalk_walkpage . '&janeswalk_link=http://janeswalk.org/$matches[1]'), $wp_rewrite->rules));
+    }
+  }
+
+  /**
+	 * Refresh the rewrite rules on update
+	 *
+	 * @since    1.0.0
+	 */
+  public function janeswalk_walkpage_option_update() {
+    flush_rewrite_rules();
   }
 
 	/**
@@ -186,9 +214,11 @@ class JanesWalk_Admin {
     $logo = plugins_url("{$this->plugin_slug}/admin/assets/images/logo.png");
     $pages = get_pages();
     $permalinks_enabled = !empty(get_option('permalink_structure'));
-    $janeswalk_links = get_option('janeswalk_links');
-     
-		include_once( 'views/admin.php' );
+    $janeswalk_walkpage = get_option('janeswalk_walkpage');
+    $janeswalk_map_height = get_option('janeswalk_map_height');
+    $janeswalk_map_width = get_option('janeswalk_map_width');
+    
+    include_once( 'views/admin.php' );
 	}
 
 	/**

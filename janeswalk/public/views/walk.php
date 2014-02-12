@@ -31,7 +31,7 @@ foreach($show as $section) {
     break;
   case "leaders": ?>
     <h3><?='Walk Leader' . (sizeof($walk_leaders) === 1 ? ': ' : 's: ') .
-      implode(', ', array_map(function($mem){ return "{$mem['name-first']} {$mem['name-last']}"; }, $walk_leaders)); ?></h3>
+      @implode(', ', array_map(function($mem){ return "{$mem['name-first']} {$mem['name-last']}"; }, $walk_leaders)); ?></h3>
 <?php
     break;
   case "themes": ?>

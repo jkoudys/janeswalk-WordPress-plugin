@@ -212,9 +212,8 @@ class JanesWalk_Admin {
 	 */
   public function display_plugin_admin_page() {
     $logo = plugins_url("{$this->plugin_slug}/admin/assets/images/logo.png");
-    $pages = get_pages();
-    $permalinks_enabled = get_option('permalink_structure');
-    $permalinks_enabled = !empty($permalinks_enabled); // Ugh, PHP
+    $pages = get_pages(array('post_status' => 'publish,private'));
+    $permalinks_enabled = get_option('permalink_structure') ? true : false;
     $janeswalk_walkpage = get_option('janeswalk_walkpage');
     $janeswalk_map_height = get_option('janeswalk_map_height');
     $janeswalk_map_width = get_option('janeswalk_map_width');

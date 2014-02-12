@@ -29,7 +29,7 @@
           <label>City walk links go to</label>
         </th>
         <td>
-          <?php wp_dropdown_pages(array('name'=>'janeswalk_walkpage', 'show_option_none' => 'No page', 'selected' => $janeswalk_walkpage)) ?>
+          <?php wp_dropdown_pages(array('name'=>'janeswalk_walkpage', 'show_option_none' => 'No page', 'post_status' => 'publish,private', 'selected' => $janeswalk_walkpage)); ?> 
         </td>
       </tr>
       <tr>

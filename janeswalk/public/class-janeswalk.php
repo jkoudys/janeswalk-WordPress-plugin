@@ -196,7 +196,7 @@ class JanesWalk {
       self::single_deactivate();
     }
 
-    unregister_setting($this->plugin_slug, 'janeswalk_links', array('JanesWalk','sanitize_links'));
+    unregister_setting($this->plugin_slug, 'janeswalk_walkpage');
   }
 
   public static function sanitize_links($link) {

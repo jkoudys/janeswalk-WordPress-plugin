@@ -20,20 +20,21 @@
 </tbody>
 </table>
 <?php
-if(!empty($json['walks'])) {
-  foreach($json['walks'] as $walk) {
+if(!empty($walks)) {
+  foreach($walks as $walk) {
     if($walk['schedule']) {
       $date = date('M j, Y', strtotime($walk['schedule']));
     } else {
       $date = "Open";
     }
+    $url = $walkpage ? ($walkpage . parse_url($walk['url'],PHP_URL_PATH)) : $walk['url'];
 ?>
 <table style="padding: 7px;" width="950" border="0" cellspacing="0" cellpadding="0">
   <tbody>
     <tr>
       <td valign="top" width="6%"><?=$date?></td>
       <td valign="top" width="8%"><?=$walk['time']?></td>
-      <td style="padding-left: 10px; padding-right: 10px;" valign="top" width="40%"><a href="<?=$walk['url']?>" ><?=$walk['title']?></a></td>
+      <td style="padding-left: 10px; padding-right: 10px;" valign="top" width="40%"><a href="<?=$url?>" ><?=$walk['title']?></a></td>
       <td valign="top" width="46%"><?=$walk['short_description']?></td>
     </tr>
   </tbody>

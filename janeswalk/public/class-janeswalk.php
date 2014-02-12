@@ -82,14 +82,7 @@ class JanesWalk {
     add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
     add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-    /* Define custom functionality.
-     * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
-     */
-    /*add_action( '@TODO', array( $this, 'action_method_name' ) );
-    add_filter( '@TODO', array( $this, 'filter_method_name' ) ); */
-
     add_shortcode( 'janeswalk', array($this, 'shortcode_janeswalk') );
-
   }
 
   /**
@@ -336,14 +329,19 @@ class JanesWalk {
    */
   public function shortcode_janeswalk($atts) {
     global $wp;
-    $link = $atts && array_key_exists('link',(array)$atts) ? $atts['link'] : $wp->query_vars['janeswalk_link'];
+    if($atts && array_key_exists('link',(array)$atts)) {
+      $link = $atts['link'];
+    }
+    else if(array_key_exists('janeswalk_link', $wp->query_vars)){
+      $link = $wp->query_vars['janeswalk_link'];
+    }
     // Get the JSON for this page
     if($json = $this->fetch_json($link)) { 
       // If you specifically set the 'show', only show those details. Otherwise, we show a most-common case
       $show = array_key_exists('show', (array)$atts) ? $atts['show'] : null;
       switch( @$atts['type'] ) {
       case "map":
-        return $this->render_map( $atts['link'] . "?format=kml" );
+        return $this->render_map( $link . "?format=kml" );
         break;
       case "city":
         return $this->render_city( $json, $show );
@@ -370,6 +368,7 @@ class JanesWalk {
 
   private function render_city( $args, $show) {
     $show = explode(' ', $show ?: 'title shortdescription longdescription cityorganizer walktitle walkleaders walkdate walkdescription');
+    $walkpage = get_permalink(get_option('janeswalk_walkpage'));
     extract($args);
     ob_start();
     if(in_array('mas', $show)) {
@@ -430,7 +429,7 @@ class JanesWalk {
   }
 
   private function render_map ( $url ) {
-    return '<iframe width="' . (get_option('janeswalk_map_width') ?: '425') . '" height="' . (get_option('janeswalk_map_height') ?: '300') . '" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=' . urlencode($url) . '&amp;output=embed"></iframe>';
+    return '<iframe width="' . (get_option('janeswalk_map_width') ?: '425') . '" height="' . (get_option('janeswalk_map_height') ?: '300') . '" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=' . urlencode($url) . '&amp;output=embed&amp;z=15"></iframe>';
   }
 }
 

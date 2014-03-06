@@ -21,6 +21,18 @@
 </table>
 <?php
 if(!empty($walks)) {
+  usort($walks, function($a,$b) {
+    if($a['schedule'] && $b['schedule']) {
+      return strtotime($b['schedule']) - strtotime($a['schedule']);
+    } else {
+      if($a['schedule']) {
+        return -1;
+      } else if($b['schedule']) {
+        return 1;
+      }
+      return 0;
+    }
+  } );
   foreach($walks as $walk) {
     if($walk['schedule']) {
       $date = date('M j, Y', strtotime($walk['schedule']));

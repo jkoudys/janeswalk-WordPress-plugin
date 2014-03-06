@@ -17,7 +17,7 @@
  * @wordpress-plugin
  * Plugin Name:       Jane's Walk
  * Plugin URI:        http://janeswalk.org
- * Description:       Fetch remote Jane's Walks 
+ * Description:       Jane’s Walk celebrates the legacy of urbanist Jane Jacobs by getting people out exploring their neighbourhoods through walking tours led by locals. Get started including Jane's Walks, Cities, and Maps on your blog.
  * Version:           1.0.0
  * Author:            Joshua Koudys
  * Author URI:        http://qaribou.com

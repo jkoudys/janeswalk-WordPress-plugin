@@ -21,6 +21,9 @@
     </p>
     <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Date</span>:</strong> <?=$date?></p>
     <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Time</span>:</strong> <?=$time?></p>
+    <?php if($wards) { ?>
+      <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Burough</span>:</strong> <?= $wards ?></p>
+    <?php } ?>
     <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Walk Host</span>:</strong> <?=implode(', ', $walk_leaders)?></p>
     <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Accessibility</span>:</strong> <?=implode(', ', $accessible)?></p>
     <p style="clear: left; margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Description</span>:</strong> <?=$longdescription?></p>

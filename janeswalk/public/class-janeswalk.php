@@ -196,7 +196,7 @@ class JanesWalk {
       self::single_deactivate();
     }
 
-    unregister_setting($this->plugin_slug, 'janeswalk_walkpage');
+//    unregister_setting($this->plugin_slug, 'janeswalk_walkpage');
   }
 
   public static function sanitize_links($link) {
@@ -329,6 +329,7 @@ class JanesWalk {
    */
   public function shortcode_janeswalk($atts) {
     global $wp;
+    $link = '';
     if($atts && array_key_exists('link',(array)$atts)) {
       $link = $atts['link'];
     }
@@ -370,6 +371,7 @@ class JanesWalk {
     $show = explode(' ', $show ?: 'title shortdescription longdescription cityorganizer walktitle walkleaders walkdate walkdescription');
     $walkpage = get_permalink(get_option('janeswalk_walkpage'));
     extract($args);
+
     ob_start();
     if(in_array('mas', $show)) {
       include 'views/nyc/city.php';

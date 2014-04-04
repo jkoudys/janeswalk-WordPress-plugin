@@ -52,7 +52,7 @@ foreach($show as $section) {
     <h4>Accessibility</h4>
     <ul class='janeswalk-widget-accessibility'>
 <?php
-    foreach($checkboxes as $key=>$theme) {
+    foreach((array) $checkboxes as $key=>$theme) {
       if(substr($key, 0, 11) == "accessible-") { 
 ?>
     <li><?=$th->getName(substr($key,11))?></li>

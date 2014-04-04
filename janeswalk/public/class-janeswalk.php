@@ -28,7 +28,7 @@ class JanesWalk {
    *
    * @var     string
    */
-  const VERSION = '0.0.2';
+  const VERSION = '0.0.3';
 
   /**
    *
@@ -414,7 +414,7 @@ class JanesWalk {
       return "{$mem['name-first']} {$mem['name-last']}";
     },
       array_filter($team, function($mem) { return strpos($mem['type'], 'leader') !== false; }));
-    $accessible = array_filter(array_keys($args['checkboxes']), function($check) { return strpos($check, 'accessible-') === 0; } );
+    $accessible = array_filter(array_keys((array) !isset($args['checkboxes']) ?: $args['checkboxes']), function($check) { return strpos($check, 'accessible-') === 0; } );
     array_walk($accessible, function(&$val,$key) use ($th) { 
       $val = $th->getName(substr($val,11)); 
     });

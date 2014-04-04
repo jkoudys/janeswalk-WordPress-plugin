@@ -21,6 +21,15 @@
 </table>
 <?php
 if(!empty($walks)) {
+  foreach($walks as $walk) {
+    if(isset($walk['slots'])) {
+      foreach(array_slice($walk['slots'], 1) as $slot) {
+        $walk['schedule'] = $slot['date'];
+        $walk['time'] = $slot['time'];
+        array_push($walks, $walk);
+      }
+    }
+  }
   usort($walks, function($a,$b) {
     if($a['schedule'] && $b['schedule']) {
       return strtotime($b['schedule']) - strtotime($a['schedule']);

@@ -9,16 +9,17 @@
 * @copyright Joshua Koudys, Qaribou
 */
 ?>
-<table style="padding: 7px;" width="950" border="0" cellspacing="0" cellpadding="0">
-<tbody>
-<tr style="background: orange; height: 30px;">
-<td style="font-weight: bold;" valign="top" width="6%">Date</td>
-<td style="font-weight: bold;" valign="top" width="8%">Time</td>
-<td style="padding-left: 10px; padding-right: 10px; font-weight: bold;" valign="top" width="40%">Walk Name</td>
-<td style="font-weight: bold;" valign="top" width="46%">Meeting Place</td>
-</tr>
-</tbody>
-</table>
+<table id="mas-janeswalk-walklist" style="padding: 7px;" width="950" border="0" cellspacing="0" cellpadding="0">
+  <thead style="background: orange; height: 30px; cursor:pointer">
+    <tr style="font-weight:bold">
+      <th valign="top" width="6%">Date</th>
+      <th valign="top" width="8%">Time</th>
+      <th style="padding-left: 10px; padding-right: 10px;" valign="top" width="40%">Walk Name</th>
+      <th valign="top" width="6%">Borough</th>
+      <th valign="top" width="40%">Meeting Place</th>
+    </tr>
+  </thead>
+  <tbody>
 <?php
 if(!empty($walks)) {
   foreach($walks as $walk) {
@@ -30,9 +31,10 @@ if(!empty($walks)) {
       }
     }
   }
-  usort($walks, function($a,$b) {
+  usort($walks, function($b,$a) {
     if($a['schedule'] && $b['schedule']) {
-      return strtotime($b['schedule']) - strtotime($a['schedule']);
+      return strtotime("{$b['schedule']} {$b['time']}") - strtotime("{$a['schedule']} {$a['time']}") ?:
+        strcmp($b['title'],$a['title']);
     } else {
       if($a['schedule']) {
         return -1;
@@ -42,7 +44,9 @@ if(!empty($walks)) {
       return 0;
     }
   } );
-  foreach($walks as $walk) {
+?>
+<?php
+  foreach($walks as $key=>$walk) {
     if($walk['schedule']) {
       $date = date('M j, Y', strtotime($walk['schedule']));
     } else {
@@ -52,19 +56,19 @@ if(!empty($walks)) {
     $first_marker = $walk['map']['markers'][0];
     $meeting = trim("{$first_marker['title']}, {$first_marker['description']}");
 ?>
-<table style="padding: 7px;" width="950" border="0" cellspacing="0" cellpadding="0">
-  <tbody>
-    <tr data-janeswalk-burough='<?= $walk['wards'] ?>' >
+    <tr data-janeswalk-sort='<?= $key ?>' data-janeswalk-burough='<?= $walk['wards'] ?>' >
       <td valign="top" width="6%"><?=$date?></td>
       <td valign="top" width="8%"><?=$walk['time']?></td>
       <td style="padding-left: 10px; padding-right: 10px;" valign="top" width="40%"><a href="<?=$url?>" ><?=$walk['title']?></a></td>
-      <td valign="top" width="46%"><?= $meeting ?: $walk['short_description'] ?></td>
+      <td valign="top" width="6%"><?= $walk['wards'] ?></td>
+      <td valign="top" width="40%"><?= $meeting ?: $walk['short_description'] ?></td>
     </tr>
+    <div height="1" style="border-bottom: 1px solid #B3B3B3;"></div>
+<?php
+  } ?>
   </tbody>
 </table>
-<div height="1" style="border-bottom: 1px solid #B3B3B3;"></div>
 <?php
-  }
 }
 ?>
 

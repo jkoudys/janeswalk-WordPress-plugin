@@ -293,7 +293,7 @@ class JanesWalk {
    * @since    1.0.0
    */
   public function enqueue_scripts() {
-    wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
+    wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'janeswalk/public/assets/js/public.js', '' ), array(), self::VERSION );
   }
 
   /**
@@ -341,12 +341,16 @@ class JanesWalk {
       // If you specifically set the 'show', only show those details. Otherwise, we show a most-common case
       $show = array_key_exists('show', (array)$atts) ? $atts['show'] : null;
       switch( @$atts['type'] ) {
-      case "map":
-        return $this->render_map( $link . "?format=kml" );
+      case 'map':
+        return $this->render_map( $link . '?format=kml' );
         break;
-      case "city":
+      case 'city':
         return $this->render_city( $json, $show );
         break;
+      case 'ward':
+        return $this->render_ward( $json, $show );
+        break;
+      case 'walk':
       default:
         return $this->render_walk( $json, $show );
         break;
@@ -420,14 +424,23 @@ class JanesWalk {
     });
     ob_start();
     if(in_array('mas', $show)) {
-      $date = @date('M j, Y', strtotime($slots[0]['date']));
-      $time = @$slots[0]['time'];
+      $date = implode(', ',
+        array_map(function($slot) {
+          return @date('M j, Y', strtotime($slot['date']));
+        }, $slots) );
+      $time = implode(', ',
+        array_map(function($slot) {
+          return $slot['time'];
+        }, $slots) );
       include 'views/nyc/walk.php';
     }
     else {
       include 'views/walk.php';
     }
     return ob_get_clean();
+  }
+
+  private function render_ward( $args, $show ) {
   }
 
   private function render_map ( $url ) {

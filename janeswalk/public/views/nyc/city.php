@@ -9,13 +9,23 @@
 * @copyright Joshua Koudys, Qaribou
 */
 ?>
+<style>
+#mas-janeswalk-walklist thead { height:30px; }
+#mas-janeswalk-walklist thead tr { font-weight:bold; }
+#mas-janeswalk-walklist th {
+  position:relative; padding-right: 15px; transition-duration:0.2s; -webkit-transition-duration:0.2s; -moz-transition-duration:0.2s; cursor:pointer; background:orange; }
+#mas-janeswalk-walklist th:hover { opacity:0.7 }
+#mas-janeswalk-walklist th:after { content: '⇳'; display:table; position:absolute; top:8px; right:3px; }
+#mas-janeswalk-walklist .sort:after { content: '▾'; }
+#mas-janeswalk-walklist .sort.reverse:after { content: '▴'; }
+</style>
 <table id="mas-janeswalk-walklist" style="padding: 7px;" width="950" border="0" cellspacing="0" cellpadding="0">
-  <thead style="background: orange; height: 30px; cursor:pointer">
-    <tr style="font-weight:bold">
+  <thead>
+    <tr>
       <th valign="top" width="6%">Date</th>
       <th valign="top" width="8%">Time</th>
       <th style="padding-left: 10px; padding-right: 10px;" valign="top" width="40%">Walk Name</th>
-      <th valign="top" width="6%">Borough</th>
+      <th class="sort" valign="top" width="6%">Borough</th>
       <th valign="top" width="40%">Meeting Place</th>
     </tr>
   </thead>

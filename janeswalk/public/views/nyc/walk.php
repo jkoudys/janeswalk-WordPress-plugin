@@ -19,11 +19,12 @@
       <?php // TODO: don't hard-code the janeswalk.org url, so that JW DBs can be setup elsewhere ?>
       <img src="http://janeswalk.org/<?=$thumbnail_url?>" class="attachment-thumbnail wp-post-image">
     </p>
-    <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Date</span>:</strong> <?=$date?></p>
-    <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Time</span>:</strong> <?=$time?></p>
+    <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;"><?= _n('Date', 'Dates', sizeof($slots)) ?></span>:</strong> <?=$date?></p>
+    <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;"><?= _n('Time', 'Times', sizeof($slots)) ?></span>:</strong> <?=$time?></p>
     <?php if($wards) { ?>
       <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Borough</span>:</strong> <?= $wards ?></p>
     <?php } ?>
+    <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Meeting Place</span>:</strong> <?= $meeting ?></p>
     <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Walk Host</span>:</strong> <?=implode(', ', $walk_leaders)?></p>
     <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Accessibility</span>:</strong> <?=implode(', ', $accessible)?></p>
     <p style="clear: left; margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;">Description</span>:</strong> <?=$longdescription?></p>

@@ -27,8 +27,8 @@ document.addEventListener('DOMContentLoaded', function(){
         }
 
         walks.sort(function(a,b) {
-          var astr = (a.querySelectorAll("td")[a.index]).innerHTML;
-          var bstr = (b.querySelectorAll("td")[b.index]).innerHTML;
+          var astr = (a.querySelectorAll("td")[a.index]).textContent;
+          var bstr = (b.querySelectorAll("td")[b.index]).textContent;
           return astr.localeCompare(bstr) || parseInt(a.getAttribute("data-janeswalk-sort")) - parseInt(b.getAttribute("data-janeswalk-sort"));
         });
         for(var i = 0, len = walks.length; i < len; i++) {

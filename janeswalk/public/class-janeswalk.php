@@ -414,14 +414,22 @@ class JanesWalk {
       }
       return $mem;
     }, $args['team']);
-    $walk_leaders = array_map(function($mem) {
-      return "{$mem['name-first']} {$mem['name-last']}";
-    },
-      array_filter($team, function($mem) { return strpos($mem['type'], 'leader') !== false; }));
-    $accessible = array_filter(array_keys((array) !isset($args['checkboxes']) ?: $args['checkboxes']), function($check) { return strpos($check, 'accessible-') === 0; } );
+    $walk_leaders = array_map(
+      function($mem) { return "{$mem['name-first']} {$mem['name-last']}"; },
+      array_filter($team, function($mem) { return strpos($mem['type'], 'leader') !== false; })
+    );
+    $accessible = array_filter(
+      array_keys($args['checkboxes'] ?: array()),
+      function($check) {
+        return strpos($check, 'accessible-') === 0;
+      }
+    );
     array_walk($accessible, function(&$val,$key) use ($th) { 
       $val = $th->getName(substr($val,11)); 
     });
+    $first_marker = $args['map']['markers'][0];
+    $meeting = implode(', ', array_filter(array(trim($first_marker['title']), trim($first_marker['description']))));
+
     ob_start();
     if(in_array('mas', $show)) {
       $date = implode(', ',

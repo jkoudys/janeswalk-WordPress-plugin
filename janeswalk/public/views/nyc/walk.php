@@ -17,7 +17,7 @@
   <div style="font-size: 1.2em;">
     <p style="margin-right: 20px;">
       <?php // TODO: don't hard-code the janeswalk.org url, so that JW DBs can be setup elsewhere ?>
-      <img src="http://janeswalk.org/<?=$thumbnail_url?>" class="attachment-thumbnail wp-post-image">
+      <?php if($thumbnail_url) { ?><img src="http://janeswalk.org/<?=$thumbnail_url?>" class="attachment-thumbnail wp-post-image"><?php } ?>
     </p>
     <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;"><?= _n('Date', 'Dates', sizeof($slots)) ?></span>:</strong> <?=$date?></p>
     <p style="margin: 0 0 10px 0;"><strong><span style="text-decoration: underline;"><?= _n('Time', 'Times', sizeof($slots)) ?></span>:</strong> <?=$time?></p>

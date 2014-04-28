@@ -70,7 +70,7 @@ if(!empty($walks)) {
     <tr data-janeswalk-sort='<?= $key ?>' data-janeswalk-burough='<?= $walk['wards'] ?>' >
       <td valign="top" width="8%"><?=$date?></td>
       <td valign="top" width="8%"><?=$walk['time']?></td>
-      <td style="padding-left: 10px; padding-right: 10px;" valign="top" width="40%"><a href="<?=$url?>" ><?=$walk['title']?></a></td>
+      <td style="padding-left: 10px; padding-right: 10px;" valign="top" width="40%"><a href="<?=$url?>" target="_blank" ><?=$walk['title']?></a></td>
       <td valign="top" width="6%"><?= $walk['wards'] ?></td>
       <td valign="top" width="38%"><?= $meeting ?: $walk['short_description'] ?></td>
     </tr>

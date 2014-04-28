@@ -364,13 +364,13 @@ class JanesWalk {
 
   private function fetch_json($url) {
     if(false === ($json = wp_cache_get('janeswalk_' . $url))) {
-      if(get_class((object)$response = wp_remote_get($url . "?format=json")) !== 'WP_Error') {
+      if(!is_wp_error((object)$response = wp_remote_get($url . "?format=json"))) {
         $json = json_decode($response['body'], true);
         wp_cache_set('janeswalk_' . $url, $json);
         echo "<div style='display:none' class='janeswalk-widget-cachemiss' data-janeswalk-cache='$url'></div>";
       } else { 
         $json = false; 
-        echo '<div style="display:none" class="janeswalk-widget-response">', print_r($response), '</div>';
+        echo '<div style="display:none" class="janeswalk-widget-response">', $response->get_error_message(), '</div>';
       }
     }
     return $json;

@@ -12,7 +12,7 @@ class JanesWalk_ThemeHelper {
   private $attributeIconMap;
 
   public function __construct() {
-    $this->attributeIconMap = [
+    $this->attributeIconMap = array(
       'nature-naturelover' => "<i class='icon-bug'></i>",
       'nature-greenthumb' => "<i class='icon-leaf'></i>",
       'nature-petlover' => "<i class='icon-heart'></i>",
@@ -43,8 +43,8 @@ class JanesWalk_ThemeHelper {
       'civic-health' => "<i class='icon-medkit'></i>",
       'civic-nativeissues' => "<i class='icon-sun'></i>",
       'civic-gender' => "<i class='icon-unlock-alt'></i>",
-    ];
-    $this->attributeNameMap = [
+    );
+    $this->attributeNameMap = array(
       'nature-naturelover' => 'Nature',
       'nature-greenthumb' => 'Gardening',
       'nature-petlover' => 'Animals',
@@ -89,7 +89,7 @@ class JanesWalk_ThemeHelper {
       'bicyclesonly' => 'Bicycles only',
       'lowlight' => 'Low light or nighttime',// Does this work?
       'seniors' => 'Senior Friendly',
-    ];
+    );
   }
 
   public function getAll($type = 'all') {
@@ -124,7 +124,7 @@ class JanesWalk_ThemeHelper {
    * @return array
    */ 
   public function getSelectOptions($type = 'all') {
-    $options = [];
+    $options = array(); 
     $satc = new SelectAttributeTypeController(AttributeType::getByHandle('select'));
 
     if($type === 'all' || $type === 'theme') {
@@ -132,16 +132,16 @@ class JanesWalk_ThemeHelper {
       $themeAK = CollectionAttributeKey::getByHandle('theme');
       foreach ($satc->getOptions() as $v) {
         $category = $this->getCategory($v->value);
-        $options['theme'][$category][] = [
+        $options['theme'][$category][] = array(
           'handle' => $v->value,
           'name' => $this->getName($v->value),
-        ];
+        );
       }
     }
     if($type === 'all' || $type === 'accessibile') {
       $satc->setAttributeKey(CollectionAttributeKey::getByHandle('accessible'));
       foreach ($satc->getOptions() as $v) {
-        $options['accessible'][] = ['handle' => $v->value, 'name' => $this->getName($v->value)];
+        $options['accessible'][] = array('handle' => $v->value, 'name' => $this->getName($v->value));
       }
     }
     return $options;

@@ -357,14 +357,14 @@ class JanesWalk {
         break;
       }
     } else {
-      echo '<div style="display:none" class="janeswalk-widget-loadfailure">', print_r($json), '</div>';
-      return "JanesWalk cannot load URL $link?format=json at this time.";
+      echo '<div style="display:none" class="janeswalk-widget-loadfailure">', "JanesWalk cannot load URL $link?format=json at this time.", print_r($json), '</div>';
+      return 'Sorry, we took to long to load this page for you. Please wait a minute or so and try again.';
     }
   }
 
   private function fetch_json($url) {
     if(false === ($json = wp_cache_get('janeswalk_' . $url))) {
-      if(!is_wp_error((object)$response = wp_remote_get($url . "?format=json"))) {
+      if(!is_wp_error((object)$response = wp_remote_get($url . "?format=json", array('timeout' => 45)))) {
         $json = json_decode($response['body'], true);
         wp_cache_set('janeswalk_' . $url, $json);
         echo "<div style='display:none' class='janeswalk-widget-cachemiss' data-janeswalk-cache='$url'></div>";

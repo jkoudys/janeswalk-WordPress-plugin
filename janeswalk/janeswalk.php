@@ -8,11 +8,11 @@
  * out of sync between your blog and the walk, or host your own
  * site listing walks with your own theme.
  *
- * @package   janeswalk
+ * @package   JanesWalk
  * @author    Joshua Koudys <josh@qaribou.com>
+ * @copyright 2014 Joshua Koudys, Qaribou Software
  * @license   GPL-2.0+
  * @link      http://janeswalk.org
- * @copyright 2014 Joshua Koudys, Qaribou Software 
  *
  * @wordpress-plugin
  * Plugin Name:       Jane's Walk
@@ -29,25 +29,25 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
+if (!defined('WPINC')) {
+    die;
 }
 
 /*----------------------------------------------------------------------------*
  * Public-Facing Functionality
  *----------------------------------------------------------------------------*/
 
-require_once( plugin_dir_path( __FILE__ ) . 'public/class-janeswalk.php' );
+require_once plugin_dir_path(__FILE__) . 'public/class-janeswalk.php';
 
 /*
  * Register hooks that are fired when the plugin is activated or deactivated.
  * When the plugin is deleted, the uninstall.php file is loaded.
  *
  */
-register_activation_hook( __FILE__, array( 'JanesWalk', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'JanesWalk', 'deactivate' ) );
+register_activation_hook(__FILE__, array( 'JanesWalk', 'activate'));
+register_deactivation_hook(__FILE__, array( 'JanesWalk', 'deactivate'));
 
-add_action( 'plugins_loaded', array( 'JanesWalk', 'get_instance' ) );
+add_action('plugins_loaded', array('JanesWalk', 'getInstance'));
 
 /*----------------------------------------------------------------------------*
  * Dashboard and Administrative Functionality
@@ -63,8 +63,7 @@ add_action( 'plugins_loaded', array( 'JanesWalk', 'get_instance' ) );
  *
  * The code below is intended to to give the lightest footprint possible.
  */
-if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
-	require_once( plugin_dir_path( __FILE__ ) . 'admin/class-janeswalk-admin.php' );
-	add_action( 'plugins_loaded', array( 'JanesWalk_Admin', 'get_instance' ) );
-
+if (is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX)) {
+    include_once plugin_dir_path(__FILE__) . 'admin/class-janeswalk-admin.php';
+    add_action('plugins_loaded', array( 'JanesWalk_Admin', 'getInstance'));
 }

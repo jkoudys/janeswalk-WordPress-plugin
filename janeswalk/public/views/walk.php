@@ -16,22 +16,31 @@
 foreach($show as $section) {
   switch($section) {
   case "title": ?>
-  <h2 class='janeswalk-widget-title'><?=$title?></h2>
+  <h2 class='janeswalk-widget-title'><?= $title ?></h2>
 <?php
     break;
   case "date":
-    if(array_key_exists('open',$time) && $time['open']) { ?>
+    if(array_key_exists('open', $time) && $time['open']) { ?>
   <h4 class="available-time"><i class="icon-calendar"></i> Open schedule</h4>
 <?php
     } else if(isset($slots[0]['date'])) {
 ?>
-  <h4 class='available-time'><i class='icon-calendar'></i> Next available day: <span class='highlight'><?=$slots[0]['date']?></span></h4>
+  <h4 class='available-time'><i class='icon-calendar'></i> Next available day: <span class='highlight'><?= $slots[0]['date'] ?></span></h4>
 <?php
     }
     break;
   case "leaders": ?>
-    <h3><?='Walk Leader' . (sizeof($walk_leaders) === 1 ? ': ' : 's: ') .
-      @implode(', ', array_map(function($mem){ return "{$mem['name-first']} {$mem['name-last']}"; }, $walk_leaders)); ?></h3>
+      <h3><?= 'Walk Leader' .
+          (count($walk_leaders) === 1 ? ': ' : 's: ') .
+          implode(
+              ', ',
+              array_map(
+                  function($mem) {
+                      return trim($mem['name-first'] . ' ' . $mem['name-last']);
+                  },
+                  $walk_leaders
+              )
+          ); ?></h3>
 <?php
     break;
   case "themes": ?>
@@ -41,7 +50,7 @@ foreach($show as $section) {
     foreach($checkboxes as $key=>$theme) {
       if(substr($key, 0, 6) == "theme-") {
 ?>
-      <li data-key='$key'><?=$th->getName(substr($key,6))?></li>
+      <li data-key='$key'><?= $th->getName(substr($key, 6)) ?></li>
 <?php
       }
     } ?>
@@ -52,10 +61,10 @@ foreach($show as $section) {
     <h4>Accessibility</h4>
     <ul class='janeswalk-widget-accessibility'>
 <?php
-    foreach((array) $checkboxes as $key=>$theme) {
-      if(substr($key, 0, 11) == "accessible-") { 
+    foreach ((array) $checkboxes as $key => $theme) {
+      if (substr($key, 0, 11) === "accessible-") {
 ?>
-    <li><?=$th->getName(substr($key,11))?></li>
+    <li><?= $th->getName(substr($key, 11)) ?></li>
 <?php
       }
     }
@@ -69,15 +78,15 @@ foreach($show as $section) {
 <?php
     break; 
   case "register":
-    if(!empty($eventbrite)) {
+    if (!empty($eventbrite)) {
 ?>
-    <a data-eid="<?=$eventbrite?>" href="<?="http://eventbrite.ca/event/" . $eventbrite ?>" id="register-btn" class="btn btn-primary btn-large">Register For This Walk</a>
+    <a data-eid="<?= $eventbrite ?>" href="<?= 'http://eventbrite.ca/event/' . $eventbrite ?>" id="register-btn" class="btn btn-primary btn-large">Register For This Walk</a>
 <?php
     }
     break; 
   default:
 ?>
-    <p>Warning: show '<?=$section?>' not recognized.</p>
+    <p>Warning: show '<?= $section ?>' not recognized.</p>
 <?php
     break;
   }

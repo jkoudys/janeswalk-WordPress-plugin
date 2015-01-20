@@ -8,6 +8,41 @@
 * @link      http://janeswalk.org
 * @copyright Joshua Koudys, Qaribou
 */
+
+if (!empty($walks)) {
+    foreach ($walks as $walk) {
+        if (isset($walk['slots'])) {
+            foreach (array_slice($walk['slots'], 1) as $slot) {
+                $walk['schedule'] = $slot['date'];
+                $walk['time'] = $slot['time'];
+                array_push($walks, $walk);
+            }
+        }
+    }
+
+    // Sort our list of walks for the table
+    usort(
+        $walks,
+        function($b, $a) {
+            if ($a['schedule'] && $b['schedule']) {
+                // Compare scheduled walks, ie those with a set date
+                return strtotime($b['schedule'] . ' ' . $b['time']) - strtotime($a['schedule'] . ' ' . $a['time']) ?:
+                    strcmp($b['title'], $a['title']);
+            } else {
+                // Unscheduled walks display after those with a date set
+                if($a['schedule']) {
+                    return -1;
+                } else if($b['schedule']) {
+                    return 1;
+                }
+                return 0;
+            }
+        }
+    );
+} else {
+    // Cast a false/null case to an empty array
+    $walks = array();
+}
 ?>
 <style>
 #mas-janeswalk-walklist thead { height:30px; }
@@ -32,53 +67,36 @@
   </thead>
   <tbody>
 <?php
-if(!empty($walks)) {
-  foreach($walks as $walk) {
-    if(isset($walk['slots'])) {
-      foreach(array_slice($walk['slots'], 1) as $slot) {
-        $walk['schedule'] = $slot['date'];
-        $walk['time'] = $slot['time'];
-        array_push($walks, $walk);
-      }
-    }
-  }
-  usort($walks, function($b,$a) {
-    if($a['schedule'] && $b['schedule']) {
-      return strtotime("{$b['schedule']} {$b['time']}") - strtotime("{$a['schedule']} {$a['time']}") ?:
-        strcmp($b['title'],$a['title']);
+// Go through all the walks in this city
+foreach($walks as $key => $walk) {
+    // Format the date or open-scheduled text
+    if ($walk['schedule']) {
+        $date = date('M j, Y', strtotime($walk['schedule']));
     } else {
-      if($a['schedule']) {
-        return -1;
-      } else if($b['schedule']) {
-        return 1;
-      }
-      return 0;
+        $date = "Open";
     }
-  } );
-?>
-<?php
-  foreach($walks as $key=>$walk) {
-    if($walk['schedule']) {
-      $date = date('M j, Y', strtotime($walk['schedule']));
-    } else {
-      $date = "Open";
-    }
-    $url = $walkpage ? ($walkpage . parse_url($walk['url'],PHP_URL_PATH)) : $walk['url'];
-    $first_marker = $walk['map']['markers'][0];
-    $meeting = implode(', ', array_filter(array(trim($first_marker['title']), trim($first_marker['description']))));
+
+    // Build link to the walk's URL. $walkpage is a WP config for page's host
+    $url = $walkpage ? ($walkpage . parse_url($walk['url'], PHP_URL_PATH)) : $walk['url'];
+    $firstMarker = $walk['map']['markers'][0];
+    $meeting = implode(
+        ', ',
+        array_filter(
+            array(
+                trim($firstMarker['title']),
+                trim($firstMarker['description'])
+            )
+        )
+    );
 ?>
     <tr data-janeswalk-sort='<?= $key ?>' data-janeswalk-burough='<?= $walk['wards'] ?>' >
-      <td valign="top" width="8%"><?=$date?></td>
-      <td valign="top" width="8%"><?=$walk['time']?></td>
-      <td style="padding-left: 10px; padding-right: 10px;" valign="top" width="40%"><a href="<?=$url?>" target="_blank" ><?=$walk['title']?></a></td>
+      <td valign="top" width="8%"><?= $date ?></td>
+      <td valign="top" width="8%"><?= $walk['time'] ?></td>
+      <td style="padding-left: 10px; padding-right: 10px;" valign="top" width="40%"><a href="<?= $url ?>" target="_blank" ><?= $walk['title'] ?></a></td>
       <td valign="top" width="6%"><?= $walk['wards'] ?></td>
       <td valign="top" width="38%"><?= $meeting ?: $walk['short_description'] ?></td>
     </tr>
 <?php
-  } ?>
+} ?>
   </tbody>
 </table>
-<?php
-}
-?>
-

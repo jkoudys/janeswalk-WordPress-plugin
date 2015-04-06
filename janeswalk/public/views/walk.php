@@ -10,85 +10,99 @@
  * @link      http://janeswalk.org
  * @copyright 2014 Joshua Koudys, Qaribou
  */
-?>
 
-<?php
-foreach($show as $section) {
-  switch($section) {
-  case "title": ?>
-  <h2 class='janeswalk-widget-title'><?= $title ?></h2>
-<?php
-    break;
-  case "date":
-    if(array_key_exists('open', $time) && $time['open']) { ?>
-  <h4 class="available-time"><i class="icon-calendar"></i> Open schedule</h4>
-<?php
-    } else if(isset($slots[0]['date'])) {
-?>
-  <h4 class='available-time'><i class='icon-calendar'></i> Next available day: <span class='highlight'><?= $slots[0]['date'] ?></span></h4>
-<?php
-    }
-    break;
-  case "leaders": ?>
-      <h3><?= 'Walk Leader' .
-          (count($walk_leaders) === 1 ? ': ' : 's: ') .
-          implode(
-              ', ',
-              array_map(
-                  function($mem) {
-                      return trim($mem['name-first'] . ' ' . $mem['name-last']);
-                  },
-                  $walk_leaders
-              )
-          ); ?></h3>
-<?php
-    break;
-  case "themes": ?>
-  <h4>Themes</h4>
-    <ul class='janeswalk-widget-themes'>
-<?php
-    foreach($checkboxes as $key=>$theme) {
-      if(substr($key, 0, 6) == "theme-") {
-?>
-      <li data-key='$key'><?= $th->getName(substr($key, 6)) ?></li>
-<?php
-      }
-    } ?>
-    </ul>
-<?php
-    break; 
-  case "accessibility": ?>
-    <h4>Accessibility</h4>
-    <ul class='janeswalk-widget-accessibility'>
-<?php
-    foreach ((array) $checkboxes as $key => $theme) {
-      if (substr($key, 0, 11) === "accessible-") {
-?>
-    <li><?= $th->getName(substr($key, 11)) ?></li>
-<?php
-      }
-    }
-?>
-    </ul>
-<?php
-    break; 
-  case "description":
-?>
-    <p style='font-size:1.2em' class='janeswalk-widget-shortdescription'><?=$shortdescription?></p><p><?=$longdescription?></p>
-<?php
-    break; 
-  case "register":
-    if (!empty($eventbrite)) {
-?>
-    <a data-eid="<?= $eventbrite ?>" href="<?= 'http://eventbrite.ca/event/' . $eventbrite ?>" id="register-btn" class="btn btn-primary btn-large">Register For This Walk</a>
-<?php
-    }
-    break; 
-  default:
-?>
-    <p>Warning: show '<?= $section ?>' not recognized.</p>
-<?php
-    break;
-  }
+// Helpers
+$th = new JanesWalk_ThemeHelper();
+
+// Use an assoc array of closures
+$renders = array(
+	'title' => function($args) {
+		return '<h2 class="janeswalk-widget-title">' . $args['title'] . '</h2>';
+	},
+	'date' => function($args) {
+		$next = DateTime::createFromFormat('U', $args['time'][0], new DateTimeZone('UTC'));
+		return (
+			'<h4 class="available-time">' .
+			'<i class="icon-calendar"></i> ' . __('Next available day') .
+			': <span class="highlight">' . $next->format('M j, Y') . '</span>' .
+			'</h4>'
+		);
+	},
+	'leaders' => function($args) {
+		return (
+			'<h3>' . _n('Walk Leader', 'Walk Leaders', count($walk_leaders)) .
+			implode(
+				', ',
+				array_map(
+					function($mem) {
+						return trim($mem['name-first'] . ' ' . $mem['name-last']);
+					},
+					$walk_leaders
+				)
+			) . '</h3>'
+		);
+	},
+	'themes' => function($args) use ($th) {
+		$themes = array_filter(
+			$args['checkboxes'],
+			function($check) {
+				return (substr($check, 0, 6) === 'theme-');
+			}
+		);
+		$lis = implode(
+			'',
+			array_map(
+				function($check) use ($th) {
+					return '<li>' . $th->getName(substr($key, 6)) . '</li>';
+				},
+				$themes
+			)
+		);
+		return (
+			'<h4>' . __('Themes') . '</h4>' .
+			'<ul class="janeswalk-widget-themes">' . $lis . '</ul>'
+		);
+	},
+	'accessibility' => function($args) use ($th) {
+		$access = array_filter(
+			$args['checkboxes'],
+			function($check) {
+				return (substr($check, 0, 11) === 'accessible-');
+			}
+		);
+		$lis = implode(
+			'',
+			array_map(
+				function($check) use ($th) {
+					return '<li>' . $th->getName(substr($key, 11)) . '</li>';
+				},
+				$themes
+			)
+		);
+		return (
+			'<h4>' . __('Accessibility') . '</h4>' .
+			'<ul class="janeswalk-widget-accessibility">' . $lis . '</ul>'
+		);
+	},
+	'description' => function($args) {
+		return (
+			'<p style="font-size:1.2em" class="janeswalk-widget-shortdescription">' . $shortdescription . '</p>' .
+			'<p>' . $longdescription . '</p>'
+		);
+	},
+	'register' => function($args) {
+		if (!empty($args['eventbrite'])) {
+			return (
+				'<a data-eid="' . $args['eventbrite'] . '" href="http://eventbrite.ca/event/' . $eventbrite . '" id="register-btn" class="btn btn-primary btn-large">' .
+				__('Register For This Walk') .
+				'</a>'
+			);
+		}
+	}
+);
+
+// Output the rendered content
+foreach ($show as $section) {
+	echo $section($args);
 }
-?>
+

@@ -165,9 +165,9 @@ class JanesWalk
 	 * @since 1.0.0
 	 *
 	 * @param boolean $network_wide True if WPMU superadmin uses "Network Deactivate" action, false if WPMU is disabled or plugin is deactivated on an individual blog. "Network Deactivate" action, false if WPMU is disabled or plugin is deactivated on an individual blog.
-	 *                                       "Network Deactivate" action, false if
-	 *                                       WPMU is disabled or plugin is
-	 *                                       deactivated on an individual blog.
+	 *        "Network Deactivate" action, false if
+	 *        WPMU is disabled or plugin is
+	 *        deactivated on an individual blog.
 	 */
 	public static function deactivate( $network_wide )
 	{
@@ -503,16 +503,15 @@ class JanesWalk
 		);
 
 		// Render view
-		ob_start();
-
 		// Check for custom views
 		if (in_array('mas', $show)) {
+			ob_start();
 			include 'views/nyc/walk.php';
+			return ob_get_clean();
 		}
 		else {
-			include 'views/walk.php';
+			return include 'views/walk.php';
 		}
-		return ob_get_clean();
 	}
 
 	/**
@@ -533,7 +532,15 @@ class JanesWalk
 	 */
 	private function renderMap($url)
 	{
-		return '<iframe width="' . (get_option('janeswalk_map_width') ?: '425') . '" height="' . (get_option('janeswalk_map_height') ?: '300') . '" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=' . urlencode($url) . '&amp;output=embed&amp;z=15"></iframe>';
+		// Build a hash to reference this specific map
+		$keyName = md5($url);
+		$width = get_option('janeswalk_map_width') ?: '425px';
+		$height = get_option('janeswalk_map_height') ?: '300px';
+
+		$containerTag = '<div id="' + $keyName + '" style="width:' + $width + ';height:'+ $height +'"></div>';
+		$scriptTag = '<script type="text/javascript">(function() { function loadMap(url, id) { var myOptions = { zoom: 8, mapTypeId: google.maps.MapTypeId.ROADMAP }; var map = new google.maps.Map(document.getElementById("' + $keyName + '"), myOptions); var walkLayer = new google.maps.KmlLayer({url: url}); walkLayer.setMap(map);} loadMap("' + $url + ',' + $keyName + '"); )()</script>';
+
+		return $containerTag . $scriptTag;
 	}
 }
 

@@ -1,18 +1,34 @@
 <?php
 /**
- * Represents the view for the public-facing component of the plugin.
+ * View of a City
  *
- * This typically includes any information, if any, that is rendered to the
- * frontend of the theme when the plugin is activated.
+ * A City - basically a list of walks for that city. City details are better
+ * left up to the WordPress page content itself.
  *
- * @package   Plugin_Name
- * @author    Your Name <email@example.com>
+ * @package   janeswalk
+ * @author    Joshua Koudys <josh@qaribou.com>
  * @license   GPL-2.0+
- * @link      http://example.com
- * @copyright 2014 Your Name or Company Name
+ * @link      http://janeswalk.org
+ * @copyright 2014 Joshua Koudys, Qaribou
  */
-?>
-<?php
+
+$renders = array(
+	'title' => function($args) {
+	}
+);
+
+// Output the rendered content
+// TODO: move this into controller-logic
+return implode(
+	'',
+	array_map(
+		function($section) use ($args) {
+			return $section($args);
+		},
+		$show
+	)
+);
+
     $return = "";
     foreach ($show as $section) {
       switch ($section) {

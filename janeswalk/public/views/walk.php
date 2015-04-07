@@ -102,7 +102,14 @@ $renders = array(
 );
 
 // Output the rendered content
-foreach ($show as $section) {
-	echo $section($args);
-}
-
+return implode(
+	'',
+	array_map(
+		function($section) use ($args) {
+			if ($section instanceof Closure) {
+				return $section($args);
+			}
+		},
+		$show
+	)
+);

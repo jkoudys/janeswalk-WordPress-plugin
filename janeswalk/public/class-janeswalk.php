@@ -537,8 +537,8 @@ class JanesWalk
 		$width = get_option('janeswalk_map_width') ?: '425px';
 		$height = get_option('janeswalk_map_height') ?: '300px';
 
-		$containerTag = '<div id="' + $keyName + '" style="width:' + $width + ';height:'+ $height +'"></div>';
-		$scriptTag = '<script type="text/javascript">(function() { function loadMap(url, id) { var myOptions = { zoom: 8, mapTypeId: google.maps.MapTypeId.ROADMAP }; var map = new google.maps.Map(document.getElementById("' + $keyName + '"), myOptions); var walkLayer = new google.maps.KmlLayer({url: url}); walkLayer.setMap(map);} loadMap("' + $url + ',' + $keyName + '"); )()</script>';
+		$containerTag = '<div id="' . $keyName . '" style="width:' . $width . ';height:' . $height . '"></div>';
+		$scriptTag = '<script type="text/javascript">(function() { function loadMap(url, id) { var myOptions = { zoom: 8, mapTypeId: google.maps.MapTypeId.ROADMAP }; var map = new google.maps.Map(document.getElementById("' . $keyName . '"), myOptions); var walkLayer = new google.maps.KmlLayer({url: url}); walkLayer.setMap(map);} loadMap("' . $url . ',' . $keyName . '"); )()</script>';
 
 		return $containerTag . $scriptTag;
 	}

@@ -19,8 +19,7 @@
 
 require_once 'helpers/theme.php';
 
-class JanesWalk
-{
+class JanesWalk {
 
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
@@ -68,20 +67,19 @@ class JanesWalk
 	 *
 	 * @since 1.0.0
 	 */
-	private function __construct()
-	{
+	private function __construct() {
 		// Load plugin text domain
-		add_action('init', array($this, 'loadPluginTextdomain'));
-		add_action('init', array($this, 'addRewriteTags'));
+		add_action('init', array( $this, 'load_plugin_textdomain' ));
+		add_action('init', array( $this, 'add_rewrite_tags' ));
 
 		// Activate plugin when new blog is added
-		add_action('wpmu_new_blog', array($this, 'activate_new_site'));
+		add_action('wpmu_new_blog', array( $this, 'activate_new_site' ));
 
 		// Load public-facing style sheet and JavaScript.
-		add_action('wp_enqueue_scripts', array($this, 'enqueueStyles'));
-		add_action('wp_enqueue_scripts', array($this, 'enqueueScripts'));
+		add_action('wp_enqueue_scripts', array( $this, 'enqueue_styles' ));
+		add_action('wp_enqueue_scripts', array( $this, 'enqueue_scripts' ));
 
-		add_shortcode('janeswalk', array($this, 'shortcodeJaneswalk'));
+		add_shortcode('janeswalk', array( $this, 'shortcode_janeswalk' ));
 	}
 
 	/**
@@ -91,8 +89,7 @@ class JanesWalk
 	 *
 	 * @return Plugin slug variable.
 	 */
-	public function get_plugin_slug()
-	{
+	public function get_plugin_slug() {
 		return $this->plugin_slug;
 	}
 
@@ -103,10 +100,9 @@ class JanesWalk
 	 *
 	 * @return object    A single instance of this class.
 	 */
-	public static function getInstance()
-	{
+	public static function get_instance() {
 		// If the single instance hasn't been set, set it now.
-		if (null == self::$instance) {
+		if ( null == self::$instance ) {
 			self::$instance = new self;
 		}
 
@@ -123,29 +119,8 @@ class JanesWalk
 	 *  WPMU is disabled or plugin is
 	 *  activated on an individual blog.
 	 */
-	public static function activate($network_wide)
-	{
-		if (function_exists('is_multisite') && is_multisite()) {
-
-			if ( $network_wide  ) {
-
-				// Get all blog ids
-				$blog_ids = self::getBlogIDs();
-
-				foreach ($blog_ids as $blog_id) {
-					switch_to_blog($blog_id);
-					self::single_activate();
-				}
-
-				restore_current_blog();
-
-			} else {
-				self::single_activate();
-			}
-
-		} else {
-			self::single_activate();
-		}
+	public static function activate($network_wide) {
+		// TODO: support multi-site activation hooks via REST
 	}
 
 	/**
@@ -153,8 +128,7 @@ class JanesWalk
 	 *
 	 * @since 1.0.0
 	 */
-	public function addRewriteTags()
-	{
+	public function add_rewrite_tags() {
 		add_rewrite_tag('%janeswalk_link%', '([^&/]+)');
 	}
 
@@ -169,35 +143,11 @@ class JanesWalk
 	 *        WPMU is disabled or plugin is
 	 *        deactivated on an individual blog.
 	 */
-	public static function deactivate( $network_wide )
-	{
-		if (function_exists('is_multisite') && is_multisite()) {
-
-			if ($network_wide) {
-
-				// Get all blog ids
-				$blog_ids = self::getBlogIDs();
-
-				foreach ($blog_ids as $blog_id) {
-					switch_to_blog($blog_id);
-					self::single_deactivate();
-				}
-
-				restore_current_blog();
-
-			} else {
-				self::single_deactivate();
-			}
-
-		} else {
-			self::single_deactivate();
-		}
-
-		//    unregister_setting($this->plugin_slug, 'janeswalk_walkpage');
+	public static function deactivate( $network_wide ) {
+		// TODO: support multi-site via RESTful deactivation
 	}
 
-	public static function sanitize_links($link)
-	{
+	public static function sanitize_links($link) {
 		return $link; // TODO: verify this actually links to a real page
 	}
 
@@ -208,37 +158,10 @@ class JanesWalk
 	 *
 	 * @param int $blog_id ID of the new blog.
 	 */
-	public function activate_new_site($blog_id)
-	{
-		if (1 !== did_action('wpmu_new_blog')) {
+	public function activate_new_site($blog_id) {
+		if ( 1 !== did_action('wpmu_new_blog') ) {
 			return;
 		}
-
-		switch_to_blog($blog_id);
-		self::single_activate();
-		restore_current_blog();
-	}
-
-	/**
-	 * Get all blog ids of blogs in the current network that are:
-	 * - not archived
-	 * - not spam
-	 * - not deleted
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array|false    The blog ids, false if no matches.
-	 */
-	private static function getBlogIDs()
-	{
-		global $wpdb;
-
-		// get an array of blog ids
-		$sql = 'SELECT blog_id FROM ' .
-			$wpdb->blogs .
-			'WHERE archived = "0" AND spam = "0" AND deleted = "0"';
-
-		return $wpdb->get_col($sql);
 	}
 
 	/**
@@ -246,8 +169,7 @@ class JanesWalk
 	 *
 	 * @since 1.0.0
 	 */
-	private static function single_activate()
-	{
+	private static function single_activate() {
 		// @TODO: Define activation functionality here
 	}
 
@@ -256,8 +178,7 @@ class JanesWalk
 	 *
 	 * @since 1.0.0
 	 */
-	private static function single_deactivate()
-	{
+	private static function single_deactivate() {
 		// @TODO: Define deactivation functionality here
 	}
 
@@ -266,8 +187,7 @@ class JanesWalk
 	 *
 	 * @since 1.0.0
 	 */
-	public function loadPluginTextdomain()
-	{
+	public function load_plugin_textdomain() {
 		$domain = $this->plugin_slug;
 		$locale = apply_filters('plugin_locale', get_locale(), $domain);
 
@@ -280,8 +200,7 @@ class JanesWalk
 	 *
 	 * @since 1.0.0
 	 */
-	public function enqueueStyles()
-	{
+	public function enqueue_styles() {
 		wp_enqueue_style($this->plugin_slug . '-plugin-styles', plugins_url('assets/css/public.css', __FILE__), array(), self::VERSION);
 	}
 
@@ -290,9 +209,13 @@ class JanesWalk
 	 *
 	 * @since 1.0.0
 	 */
-	public function enqueueScripts()
-	{
-		wp_enqueue_script($this->plugin_slug . '-plugin-script', plugins_url('janeswalk/public/assets/js/public.js', ''), array(), self::VERSION);
+	public function enqueue_scripts() {
+		wp_enqueue_script(
+			$this->plugin_slug . '-plugin-script',
+			plugins_url('janeswalk/public/assets/js/public.js', ''),
+			array(),
+			self::VERSION
+		);
 	}
 
 	/**
@@ -300,43 +223,47 @@ class JanesWalk
 	 *
 	 * @since 1.0.0
 	 */
-	public function shortcodeJaneswalk(array $atts = array())
-	{
+	public function shortcode_janeswalk($atts = array()) {
 		global $wp;
 
+		// Silly sanitization needed for WP passing in a blank string instead of a null array
+		if ( ! is_array($atts) ) {
+			$atts = explode(' ', (string) $atts);
+		}
+
 		$link = '';
-		if (array_key_exists('link', $atts)) {
+		if ( array_key_exists('link', $atts) ) {
 			$link = $atts['link'];
-		} elseif (array_key_exists('janeswalk_link', $wp->query_vars)) {
+		} elseif ( array_key_exists('janeswalk_link', $wp->query_vars) ) {
 			$link = $wp->query_vars['janeswalk_link'];
 		}
 
 		// Get the JSON for this page
-		$json = $this->fetchJson($link);
-		if ($json) {
+		$json = $this->fetch_json($link);
+		if ( $json ) {
 			try {
 				// If you specifically set the 'show', only show those details.
 				$show = array_key_exists('show', $atts) ? $atts['show'] : null;
-				switch ($atts['type']) {
-				case 'map':
-					return $this->renderMap($link . '?format=kml');
-					break;
-				case 'city':
-					return $this->renderCity($json, $show);
-					break;
-				case 'ward':
-					return $this->renderWard($json, $show);
-					break;
-				case 'walk':
-				default:
-					return $this->renderWalk($json, $show);
-					break;
+				switch ( $atts['type'] ) {
+					case 'map':
+						return $this->render_map($link . '?format=kml');
+						break;
+					case 'city':
+						return $this->render_city($json, $show);
+						break;
+					case 'ward':
+						return $this->render_ward($json, $show);
+						break;
+					case 'walk':
+					default:
+						return $this->render_walk($json, $show);
+						break;
 				}
 			} catch (Exception $e) {
 				echo '<div style="display:none" class="janeswalk-widget-loadfailure">', $e, '</div>';
 			}
 		} else {
-			echo '<div style="display:none" class="janeswalk-widget-loadfailure">', 'JanesWalk cannot load URL ', $link, '?format=json at this time.', print_r($json), '</div>';
+			echo '<div style="display:none" class="janeswalk-widget-loadfailure">', 'JanesWalk cannot load URL ', $link, '?format=json at this time.', var_export($json), '</div>';
 			return 'Sorry, we took to long to load this page for you. Please wait a minute or so and try again.';
 		}
 	}
@@ -347,13 +274,12 @@ class JanesWalk
 	 * @param  string $url The URL on the JanesWalk.org site
 	 * @return array
 	 */
-	private function fetchJson($url)
-	{
+	private function fetch_json($url) {
 		// Check if we've already cached this JSON on this request
 		$json = wp_cache_get('janeswalk_' . $url);
-		if (false === $json) {
-			$response = wp_remote_get($url . '?format=json', array('timeout' => 45));
-			if (is_wp_error((object) $response)) {
+		if ( false === $json ) {
+			$response = wp_remote_get($url . '?format=json', array( 'timeout' => 45 ));
+			if ( is_wp_error((object) $response) ) {
 				$json = null;
 				echo '<div style="display:none" class="janeswalk-widget-response">', $response->get_error_message(), '</div>';
 			} else {
@@ -374,10 +300,9 @@ class JanesWalk
 	 * @param  string $show Config parameter stating what city info to show
 	 * @return string
 	 */
-	private function renderCity(array $args, $show)
-	{
+	private function render_city(array $args, $show) {
 		// Parse the config string
-		if ($show) {
+		if ( $show ) {
 			$show = explode(' ', $show);
 		} else {
 			// Default display settings
@@ -389,7 +314,7 @@ class JanesWalk
 				'walktitle',
 				'walkleaders',
 				'walkdate',
-				'walkdescription'
+				'walkdescription',
 			);
 		}
 
@@ -397,7 +322,7 @@ class JanesWalk
 		$walkpage = get_permalink(get_option('janeswalk_walkpage'));
 
 		ob_start();
-		if(in_array('mas', $show)) {
+		if ( in_array('mas', $show) ) {
 			include 'views/nyc/city.php';
 		} else {
 			include 'views/city.php';
@@ -412,10 +337,9 @@ class JanesWalk
 	 * @param  string $show Config parameter stating what walk info to show
 	 * @return string
 	 */
-	private function renderWalk(array $args, $show)
-	{
+	private function render_walk(array $args, $show) {
 		// Parse config string
-		if ($show) {
+		if ( $show ) {
 			$show = explode(' ', $show);
 		} else {
 			// Load walk show defaults
@@ -425,7 +349,7 @@ class JanesWalk
 				'date',
 				'description',
 				'accessibility',
-				'themes'
+				'themes',
 			);
 		}
 
@@ -433,33 +357,34 @@ class JanesWalk
 		// TODO: remove and do this processing server-side
 		$th = new JanesWalk_ThemeHelper();
 
+		// TODO: Remove this sloppy 'extract' and pass $args to view instead
 		extract($args);
 		// Load descriptive versions of walk role shortnames
 		$team = array_map(
 			function($mem) {
-				if($mem['type'] === 'you') {
-					$mem['type'] = ($mem['role'] === 'walk-organizer') ? 'organizer' : 'leader';
+				if ( 'you' === $mem['type'] ) {
+					$mem['type'] = ('walk-organizer' === $mem['role']) ? 'organizer' : 'leader';
 				}
-				switch($mem['type']) {
-				case 'leader':
-					$mem['title'] = 'Walk Leader';
-					break;
-				case 'organizer':
-					$mem['title'] = 'Walk Organizer';
-					break;
-				case 'community':
-					$mem['title'] = 'Community Voice';
-					break;
-				case 'volunteer':
-					$mem['title'] = 'Volunteer';
-					break;
-				default:
-					break;
+				switch ( $mem['type'] ) {
+					case 'leader':
+						$mem['title'] = 'Walk Leader';
+						break;
+					case 'organizer':
+						$mem['title'] = 'Walk Organizer';
+						break;
+					case 'community':
+						$mem['title'] = 'Community Voice';
+						break;
+					case 'volunteer':
+						$mem['title'] = 'Volunteer';
+						break;
+					default:
+						break;
 				}
 				return $mem;
 			},
-			$args['team']
-		);
+				$args['team']
+			);
 
 		// Build first-names of leaders
 		$walk_leaders = array_map(
@@ -497,14 +422,14 @@ class JanesWalk
 			array_filter(
 				array(
 					trim($first_marker['title']),
-					trim($first_marker['description'])
+					trim($first_marker['description']),
 				)
 			)
 		);
 
 		// Render view
 		// Check for custom views
-		if (in_array('mas', $show)) {
+		if ( in_array('mas', $show) ) {
 			ob_start();
 			include 'views/nyc/walk.php';
 			return ob_get_clean();
@@ -521,8 +446,7 @@ class JanesWalk
 	 * @param  string $show Config parameter stating what ward info to show
 	 * @return string
 	 */
-	private function renderWard(array $args, $show)
-	{
+	private function render_ward(array $args, $show) {
 	}
 
 	/**
@@ -530,8 +454,7 @@ class JanesWalk
 	 * @param $url The URL to this walk's KML
 	 * @return null
 	 */
-	private function renderMap($url)
-	{
+	private function render_map($url) {
 		// Build a hash to reference this specific map
 		$keyName = md5($url);
 		$width = get_option('janeswalk_map_width') ?: '425px';
@@ -543,4 +466,3 @@ class JanesWalk
 		return $containerTag . $scriptTag;
 	}
 }
-

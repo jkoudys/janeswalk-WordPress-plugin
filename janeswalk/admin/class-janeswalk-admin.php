@@ -46,7 +46,6 @@ class JanesWalk_Admin {
 	 * @since     1.0.0
 	 */
 	private function __construct() {
-
 		/*
 		 * Call $plugin_slug from public plugin class.
 		 *
@@ -55,26 +54,18 @@ class JanesWalk_Admin {
 		$this->plugin_slug = $plugin->get_plugin_slug();
 
 		// Load admin style sheet and JavaScript.
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+		add_action('admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ));
+		add_action('admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ));
 
 		// Add the options page and menu item.
-		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+		add_action('admin_menu', array( $this, 'add_plugin_admin_menu' ));
 
 		// Load up any options and whitelist
-		add_action( 'admin_init', array( $this, 'add_plugin_options' ) );
+		add_action('admin_init', array( $this, 'add_plugin_options' ));
 
 		// Add an action link pointing to the options page.
-		$plugin_basename = plugin_basename( plugin_dir_path( __DIR__ ) . $this->plugin_slug . '.php' );
-		add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
-		add_filter('query_vars', array($this, 'add_query_vars'));
-
-		/*
-		 * Define custom functionality.
-		 *
-		 * Read more about actions and filters:
-		 * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
-		 */
+		$plugin_basename = plugin_basename(plugin_dir_path(__DIR__) . $this->plugin_slug . '.php');
+		add_filter('plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ));
 	}
 
 	/**
@@ -91,7 +82,7 @@ class JanesWalk_Admin {
 		 */
 
 		// If the single instance hasn't been set, set it now.
-		if (null == self::$instance) {
+		if ( null === self::$instance ) {
 			self::$instance = new self;
 		}
 
@@ -138,7 +129,7 @@ class JanesWalk_Admin {
 
 		$screen = get_current_screen();
 		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js'), array( 'jquery' ), JanesWalk::VERSION );
+			wp_enqueue_script($this->plugin_slug . '-admin-script', plugins_url('assets/js/admin.js'), array( 'jquery' ), JanesWalk::VERSION);
 		}
 
 	}
@@ -149,7 +140,6 @@ class JanesWalk_Admin {
 	 * @since    1.0.0
 	 */
 	public function add_plugin_admin_menu() {
-
 		/*
 		 * Add a settings page for this plugin to the Settings menu.
 		 *
@@ -158,10 +148,11 @@ class JanesWalk_Admin {
 		 *        Administration Menus: http://codex.wordpress.org/Administration_Menus
 		 *
 		 *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
-		 */
+         */
+
 		$this->plugin_screen_hook_suffix = add_options_page(
-			__( 'Jane\'s Walk Settings', $this->plugin_slug ),
-			__( 'Jane\'s Walk', $this->plugin_slug ),
+			__('Jane\'s Walk Settings', $this->plugin_slug),
+			__('Jane\'s Walk', $this->plugin_slug),
 			'edit_plugins',
 			$this->plugin_slug,
 			array( $this, 'display_plugin_admin_page' )
@@ -178,10 +169,11 @@ class JanesWalk_Admin {
 		register_setting($this->plugin_slug, 'janeswalk_walkpage');
 		register_setting($this->plugin_slug, 'janeswalk_map_height');
 		register_setting($this->plugin_slug, 'janeswalk_map_width');
+		register_setting($this->plugin_slug, 'janeswalk_theme');
 
 		// Setup the rewrites
-		add_action('generate_rewrite_rules', array($this, 'generate_rewrite_rules'));
-		add_action('update_option_janeswalk_walkpage', array($this, 'janeswalk_walkpage_option_update'));
+		add_action('generate_rewrite_rules', array( $this, 'generate_rewrite_rules' ));
+		add_action('update_option_janeswalk_walkpage', array( $this, 'janeswalk_walkpage_option_update' ));
 	}
 
 	/**
@@ -190,11 +182,11 @@ class JanesWalk_Admin {
 	 * @since    1.0.0
 	 */
 	public function generate_rewrite_rules($wp_rewrite) {
-		if($janeswalk_walkpage = get_option('janeswalk_walkpage')) {
+		if ( $janeswalk_walkpage = get_option('janeswalk_walkpage') ) {
 			// TODO Confirm if this approach should be used, as add_rewrite_rule() wasn't doing anything
 			$wp_rewrite->rules = array_merge(
 				array(
-					'^' . get_page_uri($janeswalk_walkpage) . '/(.*)?' => 'index.php?page_id=' . $janeswalk_walkpage . '&janeswalk_link=http://janeswalk.org/$matches[1]'
+					'^' . get_page_uri($janeswalk_walkpage) . '/(.*)?' => 'index.php?page_id=' . $janeswalk_walkpage . '&janeswalk_link=http://janeswalk.org/$matches[1]',
 				),
 				$wp_rewrite->rules
 			);
@@ -216,12 +208,13 @@ class JanesWalk_Admin {
 	 * @since    1.0.0
 	 */
 	public function display_plugin_admin_page() {
-		$logo = plugins_url("{$this->plugin_slug}/admin/assets/images/logo.png");
-		$pages = get_pages(array('post_status' => 'publish,private'));
+		$logo = plugins_url($this->plugin_slug . '/admin/assets/images/logo.png');
+		$pages = get_pages(array( 'post_status' => 'publish,private' ));
 		$permalinks_enabled = get_option('permalink_structure') ? true : false;
 		$janeswalk_walkpage = get_option('janeswalk_walkpage');
 		$janeswalk_map_height = get_option('janeswalk_map_height');
 		$janeswalk_map_width = get_option('janeswalk_map_width');
+		$janeswalk_theme = get_option('janeswalk_theme');
 
 		include_once( 'views/admin.php' );
 	}
@@ -234,7 +227,7 @@ class JanesWalk_Admin {
 	public function add_action_links( $links ) {
 		return array_merge(
 			array(
-				'settings' => '<a href="' . admin_url( 'options-general.php?page=' . $this->plugin_slug ) . '">' . __( 'Settings', $this->plugin_slug ) . '</a>'
+				'settings' => '<a href="' . admin_url('options-general.php?page=' . $this->plugin_slug) . '">' . __('Settings', $this->plugin_slug) . '</a>',
 			),
 			$links
 		);

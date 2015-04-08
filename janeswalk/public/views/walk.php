@@ -91,7 +91,7 @@ $renders = array(
 		);
 	},
 	'register' => function($args) {
-		if (!empty($args['eventbrite'])) {
+		if ( ! empty($args['eventbrite']) ) {
 			return (
 				'<a data-eid="' . $args['eventbrite'] . '" href="http://eventbrite.ca/event/' . $eventbrite . '" id="register-btn" class="btn btn-primary btn-large">' .
 				__('Register For This Walk') .
@@ -106,7 +106,7 @@ return implode(
 	'',
 	array_map(
 		function($section) use ($args) {
-			if ($section instanceof Closure) {
+			if ( $section instanceof Closure ) {
 				return $section($args);
 			}
 		},

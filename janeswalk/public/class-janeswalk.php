@@ -231,6 +231,14 @@ class JanesWalk {
 			$atts = explode(' ', (string) $atts);
 		}
 
+		// Set attribute defaults
+		$atts = array_merge(
+			array(
+				'type' => 'walk',
+			),
+			$atts
+		);
+
 		$link = '';
 		if ( array_key_exists('link', $atts) ) {
 			$link = $atts['link'];
@@ -357,10 +365,8 @@ class JanesWalk {
 		// TODO: remove and do this processing server-side
 		$th = new JanesWalk_ThemeHelper();
 
-		// TODO: Remove this sloppy 'extract' and pass $args to view instead
-		extract($args);
 		// Load descriptive versions of walk role shortnames
-		$team = array_map(
+		$args['team'] = array_map(
 			function($mem) {
 				if ( 'you' === $mem['type'] ) {
 					$mem['type'] = ('walk-organizer' === $mem['role']) ? 'organizer' : 'leader';
@@ -383,46 +389,55 @@ class JanesWalk {
 				}
 				return $mem;
 			},
-				$args['team']
-			);
+			$args['team']
+		);
 
 		// Build first-names of leaders
-		$walk_leaders = array_map(
+		$args['walk_leaders'] = array_map(
 			function($mem) {
 				return trim($mem['name-first'] . ' ' . $mem['name-last']);
 			},
 			array_filter(
-				$team,
+				$args['team'],
 				function($mem) {
 					return strpos($mem['type'], 'leader') !== false;
 				}
 			)
 		);
 
-		// Accessibility messages
-		$accessible = array_filter(
-			array_keys($args['checkboxes'] ?: array()),
-			function($check) {
-				return strpos($check, 'accessible-') === 0;
-			}
-		);
+		// Closure to map checkboxes
+		$map_checkboxes = function($prefix) use ($args, $th) {
+			$prefix .= '-';
+			// Filter only those checks that start with prefix
+			$matches = array_filter(
+				array_keys($args['checkboxes'] ?: array()),
+				function($check) use ($prefix) {
+					return strpos($check, $prefix) === 0;
+				}
+			);
+			// Go through accessibility messages and map their shortnames
+			return array_map(
+				function($val) use ($th, $prefix) {
+					return $th->getName(substr($val, strlen($prefix)));
+				},
+				$matches
+			);
+		};
 
-		// Go through accessibility messages and map their shortnames
-		array_walk(
-			$accessible,
-			function(&$val, $key) use ($th) {
-				$val = $th->getName(substr($val, 11));
-			}
-		);
+		// Accessibility messages
+		$args['accessible'] = $map_checkboxes('accessible');
+
+		// Theme names
+		$args['themes'] = $map_checkboxes('theme');
 
 		// The meeting place is simply the first marker on the map
-		$first_marker = $args['map']['markers'][0];
-		$meeting = implode(
+		$args['first_marker'] = $args['map']['markers'][0];
+		$args['meeting'] = implode(
 			', ',
 			array_filter(
 				array(
-					trim($first_marker['title']),
-					trim($first_marker['description']),
+					trim($args['first_marker']['title']),
+					trim($args['first_marker']['description']),
 				)
 			)
 		);

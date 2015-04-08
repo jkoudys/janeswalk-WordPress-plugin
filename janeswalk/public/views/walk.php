@@ -19,43 +19,32 @@ $renders = array(
 	'title' => function($args) {
 		return '<h2 class="janeswalk-widget-title">' . $args['title'] . '</h2>';
 	},
-	'date' => function($args) {
-		$next = DateTime::createFromFormat('U', $args['time'][0], new DateTimeZone('UTC'));
+    'date' => function($args) {
+		$next = DateTime::createFromFormat('U', $args['time']['slots'][0][0], new DateTimeZone('UTC'));
 		return (
 			'<h4 class="available-time">' .
 			'<i class="icon-calendar"></i> ' . __('Next available day') .
-			': <span class="highlight">' . $next->format('M j, Y') . '</span>' .
+			': <span class="highlight">' . $next->format('M j, Y g:i a') . '</span>' .
 			'</h4>'
 		);
 	},
 	'leaders' => function($args) {
 		return (
-			'<h3>' . _n('Walk Leader', 'Walk Leaders', count($walk_leaders)) .
+			'<h3>' . _n('Walk Leader', 'Walk Leaders', count($args['walk_leaders'])) . ': ' .
 			implode(
 				', ',
-				array_map(
-					function($mem) {
-						return trim($mem['name-first'] . ' ' . $mem['name-last']);
-					},
-					$walk_leaders
-				)
+                $args['walk_leaders']
 			) . '</h3>'
 		);
 	},
 	'themes' => function($args) use ($th) {
-		$themes = array_filter(
-			$args['checkboxes'],
-			function($check) {
-				return (substr($check, 0, 6) === 'theme-');
-			}
-		);
 		$lis = implode(
 			'',
 			array_map(
 				function($check) use ($th) {
-					return '<li>' . $th->getName(substr($key, 6)) . '</li>';
+					return '<li>' . $check . '</li>';
 				},
-				$themes
+				$args['themes']
 			)
 		);
 		return (
@@ -64,19 +53,13 @@ $renders = array(
 		);
 	},
 	'accessibility' => function($args) use ($th) {
-		$access = array_filter(
-			$args['checkboxes'],
-			function($check) {
-				return (substr($check, 0, 11) === 'accessible-');
-			}
-		);
 		$lis = implode(
 			'',
 			array_map(
-				function($check) use ($th) {
-					return '<li>' . $th->getName(substr($key, 11)) . '</li>';
+				function($check) {
+					return '<li>' . $check . '</li>';
 				},
-				$themes
+				$args['accessible']
 			)
 		);
 		return (
@@ -86,8 +69,8 @@ $renders = array(
 	},
 	'description' => function($args) {
 		return (
-			'<p style="font-size:1.2em" class="janeswalk-widget-shortdescription">' . $shortdescription . '</p>' .
-			'<p>' . $longdescription . '</p>'
+			'<p style="font-size:1.2em" class="janeswalk-widget-shortdescription">' . $args['shortDescription'] . '</p>' .
+			'<p>' . $args['longDescription'] . '</p>'
 		);
 	},
 	'register' => function($args) {
@@ -105,9 +88,10 @@ $renders = array(
 return implode(
 	'',
 	array_map(
-		function($section) use ($args) {
-			if ( $section instanceof Closure ) {
-				return $section($args);
+        function($section) use ($args, $renders) {
+            $cb = $renders[$section];
+			if ( $cb instanceof Closure ) {
+				return $cb($args);
 			}
 		},
 		$show

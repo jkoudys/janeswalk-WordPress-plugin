@@ -12,8 +12,99 @@
  * @copyright 2014 Joshua Koudys, Qaribou
  */
 
+// Grab the args specific to the contained walks
+$walk_show = array( 'walkdate', 'walkleaders', 'walkdescription' );
+// The parts to show for the walk
+$walk_show = array_intersect($walk_show, $show);
+// Remove those showing from the top-level $show
+$show = array_diff($show, $walk_show);
+
 $renders = array(
 	'title' => function($args) {
+		return (
+			'<a href="' . $args['url'] . '">' .
+			'<h2 class="janeswalk-widget-title">' . $args['name'] . '</h2>' .
+			'</a>'
+		);
+	},
+	'shortdescription' => function($args) {
+		return '<div class="janeswalk-widget-shortdescription">' . $args['shortDescription'] . '</div>';
+	},
+	'longdescription' => function($args) {
+		return '<div class="janeswalk-widget-longdescription">' . $args['longDescription'] . '</div>';
+	},
+	'cityorganizer' => function($args) {
+		if ($args['cityOrganizer']) {
+			$name = $args['cityOrganizer']['firstName'] . ' ' . $args['cityOrganizer']['lastName'];
+			return '<p class="janeswalk-widget-cityorganizer">' . $name . '</p>';
+		}
+	},
+	'walktitle' => function($args) use ($walk_show) {
+		return join(
+			'',
+			array_map(
+				function($walk) use ($args, $walk_show) {
+					// Output buffer
+					$ob = '';
+					$ob .= '<h3><a href="' . $walk['url'] . '">' . $walk['title'] . '</a></h3>';
+
+					if ( in_array('walkdate', $walk_show) ) {
+						$time = $walk['time'];
+						if ($time) {
+							// Format the first start time
+							if ( ! empty($time['slots']) ) {
+								$dt = DateTime::createFromFormat('U', $time['slots'][0][0], new DateTimeZone('UTC'));
+								$ob .= '<h4 class="available-time"><i class="icon-calendar"></i> ' . __('Next available day') . ': ' . $dt->format('M j, Y g:i a') . '</h4>';
+							}
+						}
+					}
+					if ( in_array('walkleaders', $walk_show) ) {
+						$team_names = array_map(
+							function($mem) {
+								return $mem['name-first'] . ' ' . $mem['name-last'];
+							},
+							$walk['team']
+						);
+						$ob .= '<h5>' . implode(', ', $team_names) . '</h5>';
+					}
+					if ( in_array('walkdescription', $walk_show) ) {
+						$ob .= '<p class="janeswalk-widget-shortdescription">' . $walk['shortDescription'] . '</p>';
+						$ob .= '<p class="janeswalk-widget-longdescription">' . $walk['longDescription'] . '</p>';
+					}
+
+					return $ob;
+				},
+				(array) $args['walks']
+			)
+		);
+	}
+);
+
+// Clean out any walks that aren't in the future
+$args['walks'] = array_filter(
+	$args['walks'],
+	function($walk) {
+		// Check that its time is set and later than 2 days ago
+		if ( $walk['time'] && $walk['time']['slots'] && $walk['time']['slots'][0] && $walk['time']['slots'][0][0] > (time() - 2 * 24 * 60 * 60) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+);
+// Sort by start date
+usort(
+	$args['walks'],
+	function($a, $b) {
+		$time_a = $a['time']['slots'][0][0];
+		$time_b = $b['time']['slots'][0][0];
+
+		// TODO: replace with spaceships, some day
+		if ($time_a === $time_b) {
+			return 0;
+		} else {
+			return $time_a < $time_b ? -1 : 1;
+		}
 	}
 );
 
@@ -22,80 +113,10 @@ $renders = array(
 return implode(
 	'',
 	array_map(
-		function($section) use ($args) {
-			return $section($args);
+		function($section) use ($args, $renders) {
+			$cb = $renders[ $section ];
+			return $cb($args);
 		},
 		$show
 	)
 );
-
-$return = "";
-foreach ($show as $section) {
-	switch ($section) {
-	case 'title':
-?>
-  <?php if($url) { ?><a href='<?php echo $url ?>'><?php } ?>
-	<h2 class='janeswalk-widget-title'><?php echo $title ?></h2>
-  <?php if($url) { ?></a> <?php } ?>
-<?php
-		break;
-	case 'shortdescription':
-?>
-  <div class='janeswalk-widget-shortdescription'><?php echo $short_description ?></div>
-<?php
-		break;
-	case 'longdescription':
-?>
-  <div class='janeswalk-widget-longdescription'><?php echo $long_description ?></div>
-<?php
-		break;
-	case 'cityorganizer':
-?>
-  <p class='janeswalk-widget-cityorganizer'><?php echo $city_organizer['first_name'] ?> <?php echo $city_organizer['last_name'] ?></p>
-<?php
-		break;
-	default:
-		break;
-	}
-}
-if(!empty($walks)) {
-	foreach($walks as $walk) {
-		foreach($show as $section) {
-			switch($section) {
-			case "walktitle":
-?>
-  <h3><?php echo ($walk['url'] ? "<a href='{$walk['url']}'>":'') ?><?php echo $walk['title'] ?><?php echo ($walk['url'] ?'</a>':'') ?></h3>
-<?php
-				break;
-			case "date":
-				$scheduled = $walk->time;
-				$slots = (Array) $scheduled->slots; 
-				if($scheduled->open) { ?>
-  <h4 class="available-time"><i class="icon-calendar"></i> Open schedule</h4>
-<?php
-				} else if(isset($slots[0]['date'])) {
-?>
-  <h4 class='available-time'><i class='icon-calendar'></i> Next available day: <span class='highlight'><?php echo $slots[0]["date"] ?></span></h4>
-<?php
-				}
-				break;
-			case "leaders":
-?>
-  <h5><?php echo $walk->team ?></h5>
-<?php
-				break;
-			case "description":
-				// Load up the return with the data from the walk
-?>
-  <p style='font-size:1.2em' class='janeswalk-widget-shortdescription'><?php echo $walk['short_description'] ?></p>
-  <p style='font-size:1.2em' class='janeswalk-widget-longdescription'><?php echo $walk['long_description'] ?></p>
-<?php
-				break; 
-			default:
-				break;
-			}
-		}
-	}
-}
-?>
-

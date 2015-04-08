@@ -277,7 +277,7 @@ class JanesWalk {
 			}
 		} else {
 			echo '<div style="display:none" class="janeswalk-widget-loadfailure">', 'JanesWalk cannot load URL ', $link, '?format=json at this time.', var_export($json), '</div>';
-			return 'Sorry, we took to long to load this page for you. Please wait a minute or so and try again.';
+			return __('Sorry, we took to long to load this page for you. Please wait a minute or so and try again.');
 		}
 	}
 
@@ -291,7 +291,7 @@ class JanesWalk {
 		// Check if we've already cached this JSON on this request
 		$json = wp_cache_get('janeswalk_' . $url);
 		if ( false === $json ) {
-			$response = wp_remote_get($url . '?format=json', array( 'timeout' => 45 ));
+			$response = wp_remote_get(rtrim($url, '/') . '/json', array( 'timeout' => 45 ));
 			if ( is_wp_error((object) $response) ) {
 				$json = null;
 				echo '<div style="display:none" class="janeswalk-widget-response">', $response->get_error_message(), '</div>';
@@ -334,13 +334,13 @@ class JanesWalk {
 		// Option to set the domain, if serving walks outside janeswalk.org
 		$walkpage = get_permalink(get_option('janeswalk_walkpage'));
 
-		ob_start();
 		if ( in_array('mas', $show) ) {
+			ob_start();
 			include 'views/nyc/city.php';
+			return ob_get_clean();
 		} else {
-			include 'views/city.php';
+			return include 'views/city.php';
 		}
-		return ob_get_clean();
 	}
 
 	/**

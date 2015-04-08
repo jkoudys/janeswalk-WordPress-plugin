@@ -1,1 +1,7 @@
 /* This stylesheet is used to style the public-facing components of the plugin. */
+
+/* Needed to load google maps in chrome, in case theme breaks them */
+.janeswalk-map img {
+  max-width: none;
+}
+

@@ -210,10 +210,15 @@ class JanesWalk {
 	 * @since 1.0.0
 	 */
 	public function enqueue_scripts() {
+		// Google maps, for the map
+		wp_register_script('googlemaps', 'http://maps.googleapis.com/maps/api/js?&sensor=false', false, '3');
+		wp_enqueue_script('googlemaps');	
+
+		// The janeswalk functions
 		wp_enqueue_script(
 			$this->plugin_slug . '-plugin-script',
 			plugins_url('janeswalk/public/assets/js/public.js', ''),
-			array(),
+			array('googlemaps'),
 			self::VERSION
 		);
 	}
@@ -470,14 +475,10 @@ class JanesWalk {
 	 * @return null
 	 */
 	private function render_map($url) {
-		// Build a hash to reference this specific map
-		$keyName = md5($url);
 		$width = get_option('janeswalk_map_width') ?: '425px';
 		$height = get_option('janeswalk_map_height') ?: '300px';
 
-		$containerTag = '<div id="' . $keyName . '" style="width:' . $width . ';height:' . $height . '"></div>';
-		$scriptTag = '<script type="text/javascript">(function() { function loadMap(url, id) { var myOptions = { zoom: 8, mapTypeId: google.maps.MapTypeId.ROADMAP }; var map = new google.maps.Map(document.getElementById("' . $keyName . '"), myOptions); var walkLayer = new google.maps.KmlLayer({url: url}); walkLayer.setMap(map);} loadMap("' . $url . ',' . $keyName . '"); )()</script>';
-
-		return $containerTag . $scriptTag;
+		// Spit out a map element for our JS to target
+		return '<div class="janeswalk-map" style="width:' . $width . ';height:' . $height . '" data-url="' . $url . '"></div>';
 	}
 }

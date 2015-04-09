@@ -19,7 +19,7 @@ $renders = array(
 	'title' => function($args) {
 		return '<h2 class="janeswalk-widget-title">' . $args['title'] . '</h2>';
 	},
-    'date' => function($args) {
+	'date' => function($args) {
 		$next = DateTime::createFromFormat('U', $args['time']['slots'][0][0], new DateTimeZone('UTC'));
 		return (
 			'<h4 class="available-time">' .

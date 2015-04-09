@@ -88,8 +88,8 @@ $renders = array(
 return implode(
 	'',
 	array_map(
-        function($section) use ($args, $renders) {
-            $cb = $renders[$section];
+		function($section) use ($args, $renders) {
+			$cb = $renders[$section];
 			if ( $cb instanceof Closure ) {
 				return $cb($args);
 			}

@@ -105,7 +105,7 @@ class JanesWalk_Admin {
 		$screen = get_current_screen();
 		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
 			wp_enqueue_style(
-				$this->plugin_slug .'-admin-styles',
+				$this->plugin_slug . '-admin-styles',
 				plugins_url($this->plugin_slug . '/admin/assets/css/admin.css'),
 				array(),
 				JanesWalk::VERSION

@@ -115,7 +115,11 @@ return implode(
 	array_map(
 		function($section) use ($args, $renders) {
 			$cb = $renders[ $section ];
-			return $cb($args);
+			if ( $cb instanceof Closure ) {
+				return $cb($args);
+			} else {
+				return null;
+			}
 		},
 		$show
 	)

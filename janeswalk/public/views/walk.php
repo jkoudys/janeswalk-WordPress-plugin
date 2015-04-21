@@ -33,7 +33,7 @@ $renders = array(
 			'<h3>' . _n('Walk Leader', 'Walk Leaders', count($args['walk_leaders'])) . ': ' .
 			implode(
 				', ',
-                $args['walk_leaders']
+				$args['walk_leaders']
 			) . '</h3>'
 		);
 	},

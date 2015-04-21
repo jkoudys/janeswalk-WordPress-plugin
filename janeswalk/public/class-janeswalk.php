@@ -212,13 +212,13 @@ class JanesWalk {
 	public function enqueue_scripts() {
 		// Google maps, for the map
 		wp_register_script('googlemaps', 'http://maps.googleapis.com/maps/api/js?&sensor=false', false, '3');
-		wp_enqueue_script('googlemaps');	
+		wp_enqueue_script('googlemaps');
 
 		// The janeswalk functions
 		wp_enqueue_script(
 			$this->plugin_slug . '-plugin-script',
 			plugins_url('janeswalk/public/assets/js/public.js', ''),
-			array('googlemaps'),
+			array( 'googlemaps' ),
 			self::VERSION
 		);
 	}
